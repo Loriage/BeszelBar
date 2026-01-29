@@ -31,20 +31,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func startObserving() {
         observationTask = Task { @MainActor in
             while !Task.isCancelled {
-                withObservationTracking {
-                    _ = AppState.shared.instances
-                    _ = AppState.shared.selectedInstance
-                    _ = AppState.shared.selectedInstanceSystems
-                    _ = AppState.shared.isLoading
-                    _ = AppState.shared.activeAlerts
-                    _ = AppState.shared.systemDetails
-                    _ = AppState.shared.containers
-                } onChange: {
-                    Task { @MainActor in
-                        self.refreshMenu()
+                await withCheckedContinuation { continuation in
+                    withObservationTracking {
+                        _ = AppState.shared.instances
+                        _ = AppState.shared.selectedInstance
+                        _ = AppState.shared.selectedInstanceSystems
+                        _ = AppState.shared.isLoading
+                        _ = AppState.shared.activeAlerts
+                        _ = AppState.shared.systemDetails
+                        _ = AppState.shared.containers
+                    } onChange: {
+                        continuation.resume()
                     }
                 }
-                try? await Task.sleep(for: .milliseconds(100))
+                refreshMenu()
             }
         }
     }
