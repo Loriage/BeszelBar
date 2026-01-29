@@ -23,7 +23,7 @@ open build/Release/BeszelBar.app
 
 ## Screenshot
 
-![BeszelBar Screenshot](screenshot.png)
+<img src="screenshot.png" width="50%" alt="BeszelBar Screenshot">
 
 ## Features
 
