@@ -99,7 +99,6 @@ final class BeszelAPIService: @unchecked Sendable {
                 return try jsonDecoder.decode(T.self, from: data)
             } else if httpResponse.statusCode == 401 {
                 authToken = nil
-                // Retry once
                 return try await performRequest(with: url)
             } else {
                 throw BeszelAPIError.httpError(statusCode: httpResponse.statusCode, url: url.absoluteString)
@@ -209,7 +208,6 @@ final class BeszelAPIService: @unchecked Sendable {
         do {
             let response: PocketBaseListResponse<ContainerStatsRecord> = try await performRequest(with: url)
 
-            // Return only the latest stat per container
             var latestPerContainer: [String: ContainerStatsRecord] = [:]
             for stat in response.items {
                 if latestPerContainer[stat.containerID] == nil {

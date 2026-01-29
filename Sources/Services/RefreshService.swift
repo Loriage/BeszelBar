@@ -13,7 +13,6 @@ final class RefreshService {
     }
 
     private init() {
-        // Observe changes to refresh interval
         NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
             .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
             .sink { [weak self] _ in
@@ -32,7 +31,6 @@ final class RefreshService {
             }
         }
 
-        // Run initial refresh immediately
         refresh()
     }
 

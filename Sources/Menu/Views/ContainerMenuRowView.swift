@@ -5,7 +5,6 @@ struct ContainerMenuRowView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            // Top row: Name and health status
             HStack {
                 Text(container.name)
                     .font(.system(size: 11, weight: .semibold))
@@ -13,11 +12,9 @@ struct ContainerMenuRowView: View {
 
                 Spacer()
 
-                // Health badge
                 HealthBadge(health: container.health)
             }
 
-            // Middle row: CPU, Memory, Status text
             HStack(spacing: 8) {
                 Label(String(format: "%.1f%%", container.cpu), systemImage: "cpu")
                     .font(.system(size: 9))
@@ -29,13 +26,11 @@ struct ContainerMenuRowView: View {
 
                 Spacer()
 
-                // Status text (e.g., "Up 7 days")
                 Text(container.status)
                     .font(.system(size: 9))
                     .foregroundColor(.secondary)
             }
 
-            // Bottom row: Image name
             if !container.image.isEmpty {
                 Label {
                     Text(container.image)

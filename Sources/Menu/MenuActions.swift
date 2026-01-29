@@ -31,7 +31,6 @@ final class MenuActions: NSObject {
             guard let systemID = sender.representedObject as? String,
                   let instance = AppState.shared.selectedInstance else { return }
 
-            // Construct URL: {hub_url}/#/systems/{system_id}
             let urlString = "\(instance.url)/#/systems/\(systemID)"
             if let url = URL(string: urlString) {
                 NSWorkspace.shared.open(url)
@@ -42,7 +41,6 @@ final class MenuActions: NSObject {
     @objc func systemClicked(_ sender: NSMenuItem) {
         Task { @MainActor in
             guard let systemID = sender.representedObject as? String else { return }
-            // Could open details or copy URL
             if let url = AppState.shared.selectedInstance?.url {
                 NSPasteboard.general.clearContents()
                 NSPasteboard.general.setString(url, forType: .string)

@@ -12,7 +12,6 @@ final class KeychainService {
     func saveCredential(_ credential: String, for account: String) -> Bool {
         guard let data = credential.data(using: .utf8) else { return false }
 
-        // Delete existing item first
         deleteCredential(for: account)
 
         let query: [String: Any] = [
@@ -76,7 +75,6 @@ final class KeychainService {
 
         let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
 
-        // If item doesn't exist, create it
         if status == errSecItemNotFound {
             return saveCredential(credential, for: account)
         }

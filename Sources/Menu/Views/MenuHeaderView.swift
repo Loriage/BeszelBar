@@ -19,7 +19,6 @@ struct MenuHeaderView: View {
 
                 Spacer()
 
-                // Status counts
                 if !appState.selectedInstanceSystems.isEmpty {
                     let online = appState.selectedInstanceSystems.filter { $0.isOnline }.count
                     let offline = appState.selectedInstanceSystems.count - online

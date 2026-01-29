@@ -10,20 +10,17 @@ enum MenuBuilder {
         menu.autoenablesItems = false
         let actions = MenuActions.shared
 
-        // Header
         let headerItem = NSMenuItem()
         let headerView = NSHostingView(rootView: MenuHeaderView(appState: appState))
         headerView.frame = NSRect(x: 0, y: 0, width: menuWidth, height: 46)
         headerItem.view = headerView
         menu.addItem(headerItem)
 
-        // Alerts section (if any)
         if !appState.activeAlerts.isEmpty {
             menu.addItem(createAlertsSubmenu(alerts: appState.activeAlerts, systems: appState.selectedInstanceSystems))
             menu.addItem(NSMenuItem.separator())
         }
 
-        // Content
         if appState.instances.isEmpty {
             menu.addItem(createInfoItem("No Hub Configured", subtext: "Open Settings to add a hub"))
         } else if appState.isLoading {
@@ -33,7 +30,6 @@ enum MenuBuilder {
         } else if appState.selectedInstanceSystems.isEmpty {
             menu.addItem(createInfoItem("No Systems Found", subtext: "Check your hub configuration"))
         } else {
-            // Systems
             for system in appState.selectedInstanceSystems.prefix(15) {
                 let item = createSystemItem(for: system, appState: appState)
                 menu.addItem(item)
@@ -52,12 +48,10 @@ enum MenuBuilder {
 
         menu.addItem(NSMenuItem.separator())
 
-        // Hub Switcher (if multiple hubs)
         if appState.instances.count > 1 {
             menu.addItem(createHubSwitcherSubmenu(appState: appState))
         }
 
-        // Settings
         let settingsItem = NSMenuItem(
             title: "Settings...",
             action: #selector(MenuActions.openSettings),
@@ -68,7 +62,6 @@ enum MenuBuilder {
         settingsItem.image?.size = NSSize(width: 14, height: 14)
         menu.addItem(settingsItem)
 
-        // Refresh
         let refreshItem = NSMenuItem(
             title: "Refresh Now",
             action: #selector(MenuActions.refreshNow),
@@ -81,7 +74,6 @@ enum MenuBuilder {
 
         menu.addItem(NSMenuItem.separator())
 
-        // Quit
         let quitItem = NSMenuItem(
             title: "Quit BeszelBar",
             action: #selector(MenuActions.quit),
@@ -170,7 +162,6 @@ enum MenuBuilder {
         let hostingView = NSHostingView(rootView: SystemMenuRowView(system: system))
         hostingView.frame = NSRect(x: 0, y: 0, width: menuWidth, height: 44)
 
-        // Make background transparent
         let wrapper = NSView(frame: hostingView.frame)
         wrapper.wantsLayer = true
         wrapper.layer?.backgroundColor = .clear
@@ -181,7 +172,6 @@ enum MenuBuilder {
 
         item.view = wrapper
 
-        // Always create submenu with system details and actions
         let containers = appState.containers[system.id] ?? []
         let submenu = createSystemSubmenu(for: system, containers: containers, appState: appState)
         item.submenu = submenu
@@ -192,21 +182,17 @@ enum MenuBuilder {
     private static func createSystemSubmenu(for system: SystemRecord, containers: [ContainerRecord], appState: AppState) -> NSMenu {
         let submenu = NSMenu()
 
-        // Get system details for v0.18.0+ agents
         let details = appState.systemDetails[system.id]
 
-        // Rich system detail view with metrics bars
         let detailItem = NSMenuItem()
         let detailView = NSHostingView(rootView: SystemDetailView(system: system, details: details))
         detailView.frame = NSRect(x: 0, y: 0, width: 250, height: 180)
         detailItem.view = detailView
         submenu.addItem(detailItem)
 
-        // Containers section (if any)
         if !containers.isEmpty {
             submenu.addItem(NSMenuItem.separator())
 
-            // Section header using SwiftUI view (matching Usage section style)
             let headerItem = NSMenuItem()
             let headerView = NSHostingView(rootView:
                 HStack {
@@ -222,7 +208,6 @@ enum MenuBuilder {
             headerItem.view = headerView
             submenu.addItem(headerItem)
 
-            // Sort by name
             let sortedContainers = containers.sorted { $0.name.lowercased() < $1.name.lowercased() }
 
             for container in sortedContainers.prefix(10) {
@@ -238,7 +223,6 @@ enum MenuBuilder {
                 moreItem.image = NSImage(systemSymbolName: "ellipsis.circle", accessibilityDescription: nil)
                 moreItem.image?.size = NSSize(width: 12, height: 12)
 
-                // Create submenu with all remaining containers
                 let moreSubmenu = NSMenu()
                 for container in sortedContainers.dropFirst(10) {
                     let containerItem = NSMenuItem()
@@ -252,10 +236,8 @@ enum MenuBuilder {
             }
         }
 
-        // Actions section at the end
         submenu.addItem(NSMenuItem.separator())
 
-        // Open in Browser action
         let openItem = NSMenuItem(
             title: "Open in Browser",
             action: #selector(MenuActions.openSystemInBrowser(_:)),
@@ -267,7 +249,6 @@ enum MenuBuilder {
         openItem.image?.size = NSSize(width: 14, height: 14)
         submenu.addItem(openItem)
 
-        // Copy hostname (prefer details, fallback to info)
         let hostname = details?.hostname ?? system.info?.h
         if let hostname = hostname {
             let copyItem = NSMenuItem(

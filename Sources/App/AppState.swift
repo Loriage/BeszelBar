@@ -74,7 +74,6 @@ final class AppState {
                 }
                 systemDetails = mapped
             } catch {
-                // System details are optional
             }
         }
     }
@@ -89,7 +88,6 @@ final class AppState {
                 let alerts = try await service.fetchAlerts(filter: "enabled = true")
                 activeAlerts = alerts.filter { $0.triggered == true }
             } catch {
-                // Alerts are optional
             }
         }
     }
@@ -109,7 +107,6 @@ final class AppState {
                 }
                 containers = grouped
             } catch {
-                // Containers are optional
             }
         }
     }

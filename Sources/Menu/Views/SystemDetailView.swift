@@ -4,9 +4,7 @@ struct SystemDetailView: View {
     let system: SystemRecord
     var details: SystemDetailsRecord? = nil
 
-    // Computed properties to get CPU info from either source
     private var cpuModel: String? {
-        // Prefer system_details (v0.18.0+), fallback to info
         details?.cpu ?? system.info?.m
     }
 
@@ -20,9 +18,7 @@ struct SystemDetailView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // System info header
             VStack(alignment: .leading, spacing: 2) {
-                // Line 1: Hostname + uptime
                 HStack {
                     let displayName = hostname ?? system.name
                     Label {
@@ -37,7 +33,6 @@ struct SystemDetailView: View {
                     Spacer()
                 }
 
-                // Line 2: CPU info (only if available from either source)
                 if cpuModel != nil || cpuCores != nil {
                     HStack(spacing: 4) {
                         Image(systemName: "cpu")
@@ -57,7 +52,6 @@ struct SystemDetailView: View {
                     .foregroundColor(.secondary)
                 }
 
-                // Line 3: Temperature and uptime
                 if system.info?.dt != nil || system.info?.u != nil {
                     HStack(spacing: 12) {
                         if let temp = system.info?.dt {
@@ -73,11 +67,9 @@ struct SystemDetailView: View {
                 }
             }
 
-            // Divider
             Divider()
                 .padding(.vertical, 2)
 
-            // Metrics section
             VStack(alignment: .leading, spacing: 6) {
                 Label("Usage", systemImage: "chart.bar.fill")
                     .font(.system(size: 11, weight: .semibold))
