@@ -312,7 +312,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.beszel.BeszelBar;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nohitdev.BeszelBar;
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -328,7 +328,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.beszel.BeszelBar;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nohitdev.BeszelBar;
 				SDKROOT = macosx;
 			};
 			name = Release;

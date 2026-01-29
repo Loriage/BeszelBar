@@ -271,8 +271,8 @@ struct Instance: Identifiable, Codable, Equatable, Hashable {
 
 final class StorageManager {
     private let defaults = UserDefaults.standard
-    private let instancesKey = "com.beszel.BeszelBar.instances"
-    private let selectedInstanceKey = "com.beszel.BeszelBar.selectedInstance"
+    private let instancesKey = "com.nohitdev.BeszelBar.instances"
+    private let selectedInstanceKey = "com.nohitdev.BeszelBar.selectedInstance"
 
     func saveInstances(_ instances: [Instance]) {
         guard let data = try? JSONEncoder().encode(instances) else { return }

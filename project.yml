@@ -1,7 +1,7 @@
 {
   "name": "BeszelBar",
   "options": {
-    "bundleIdPrefix": "com.beszel",
+    "bundleIdPrefix": "com.nohitdev",
     "bundleShortVersion": "1.0.0",
     "bundleVersion": "1",
     "deploymentTarget": "14.0",
@@ -33,7 +33,7 @@
       "settings": {
         "base": {
           "INFOPLIST_FILE": "Resources/Info.plist",
-          "PRODUCT_BUNDLE_IDENTIFIER": "com.beszel.BeszelBar",
+          "PRODUCT_BUNDLE_IDENTIFIER": "com.nohitdev.BeszelBar",
           "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
           "COMBINE_HIDPI_IMAGES": "YES",
           "LD_RUNPATH_SEARCH_PATHS": [

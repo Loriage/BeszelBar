@@ -4,7 +4,7 @@ import Security
 final class KeychainService {
     static let shared = KeychainService()
 
-    private let service = "com.beszel.BeszelBar"
+    private let service = "com.nohitdev.BeszelBar"
 
     private init() {}
 
