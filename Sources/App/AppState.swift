@@ -67,13 +67,17 @@ final class AppState {
             do {
                 let service = getOrCreateService(for: instance)
                 let details = try await service.fetchSystemDetails()
+                guard !Task.isCancelled else { return }
 
                 var mapped: [String: SystemDetailsRecord] = [:]
                 for detail in details {
                     mapped[detail.system] = detail
                 }
                 systemDetails = mapped
+            } catch is CancellationError {
+                return
             } catch {
+                guard !Task.isCancelled else { return }
             }
         }
     }
@@ -86,8 +90,12 @@ final class AppState {
             do {
                 let service = getOrCreateService(for: instance)
                 let alerts = try await service.fetchAlerts(filter: "enabled = true")
+                guard !Task.isCancelled else { return }
                 activeAlerts = alerts.filter { $0.triggered == true }
+            } catch is CancellationError {
+                return
             } catch {
+                guard !Task.isCancelled else { return }
             }
         }
     }
@@ -100,13 +108,17 @@ final class AppState {
             do {
                 let service = getOrCreateService(for: instance)
                 let allContainers = try await service.fetchContainers()
+                guard !Task.isCancelled else { return }
 
                 var grouped: [String: [ContainerRecord]] = [:]
                 for container in allContainers {
                     grouped[container.system, default: []].append(container)
                 }
                 containers = grouped
+            } catch is CancellationError {
+                return
             } catch {
+                guard !Task.isCancelled else { return }
             }
         }
     }

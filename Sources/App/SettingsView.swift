@@ -567,12 +567,16 @@ struct AboutView: View {
                 .padding(.horizontal, 40)
 
             VStack(spacing: 8) {
-                Link(destination: URL(string: "https://github.com/henrygd/beszel")!) {
-                    Label("Beszel", systemImage: "link")
+                if let beszelURL = URL(string: "https://github.com/henrygd/beszel") {
+                    Link(destination: beszelURL) {
+                        Label("Beszel", systemImage: "link")
+                    }
                 }
 
-                Link(destination: URL(string: "https://github.com/brunooctet/BeszelBar")!) {
-                    Label("GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
+                if let githubURL = URL(string: "https://github.com/brunooctet/BeszelBar") {
+                    Link(destination: githubURL) {
+                        Label("GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
+                    }
                 }
             }
             .padding(.top, 8)

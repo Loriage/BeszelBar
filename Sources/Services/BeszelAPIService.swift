@@ -3,7 +3,7 @@ import Foundation
 final class BeszelAPIService: @unchecked Sendable {
     private let instance: Instance
     private var authToken: String?
-    private var refreshTask: Task<String, Error>?
+    private let lock = NSLock()
 
     private let session: URLSession = {
         let config = URLSessionConfiguration.default
@@ -62,7 +62,9 @@ final class BeszelAPIService: @unchecked Sendable {
         }
 
         let authResponse = try jsonDecoder.decode(AuthResponse.self, from: data)
+        lock.lock()
         self.authToken = authResponse.token
+        lock.unlock()
         return authResponse.token
     }
 
@@ -82,11 +84,13 @@ final class BeszelAPIService: @unchecked Sendable {
         }
 
         let authResponse = try jsonDecoder.decode(AuthResponse.self, from: data)
+        lock.lock()
         self.authToken = authResponse.token
+        lock.unlock()
         return authResponse.token
     }
 
-    private func performRequest<T: Decodable>(with url: URL) async throws -> T {
+    private func performRequest<T: Decodable>(with url: URL, retryCount: Int = 0) async throws -> T {
         let token = try await getValidToken()
 
         var request = URLRequest(url: url)
@@ -97,9 +101,11 @@ final class BeszelAPIService: @unchecked Sendable {
         if let httpResponse = response as? HTTPURLResponse {
             if httpResponse.statusCode == 200 {
                 return try jsonDecoder.decode(T.self, from: data)
-            } else if httpResponse.statusCode == 401 {
+            } else if httpResponse.statusCode == 401 && retryCount < 1 {
+                lock.lock()
                 authToken = nil
-                return try await performRequest(with: url)
+                lock.unlock()
+                return try await performRequest(with: url, retryCount: retryCount + 1)
             } else {
                 throw BeszelAPIError.httpError(statusCode: httpResponse.statusCode, url: url.absoluteString)
             }
