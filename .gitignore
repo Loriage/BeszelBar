@@ -1,0 +1,4 @@
+repos/
+build/
+.claude/
+*.md
