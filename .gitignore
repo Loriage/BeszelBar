@@ -1,4 +1,4 @@
 repos/
 build/
 .claude/
-*.md
+CLAUDE*.md
