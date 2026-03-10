@@ -6,6 +6,12 @@ BeszelBar keeps your [Beszel](https://github.com/henrygd/beszel) infrastructure 
 
 ## Installation
 
+### Homebrew
+
+```bash
+brew install --cask loriage/tap/beszelbar
+```
+
 ### Download
 
 Download the latest release from the [Releases](https://github.com/Loriage/BeszelBar/releases) page.
@@ -53,6 +59,24 @@ BeszelBar supports both password and JWT token authentication. Tokens are automa
 ## License
 
 MIT License — see [LICENSE](LICENSE) for details.
+
+## Releasing on Homebrew
+
+BeszelBar should be distributed as a Homebrew `cask`, not a formula, because it ships as a macOS `.app`.
+
+1. Create a tap repo named `homebrew-tap`.
+2. Copy `dist/beszelbar.rb` into `Casks/beszelbar.rb` in that tap repo after each release.
+3. Push a Git tag like `v1.0.0` on this repo to trigger `.github/workflows/release.yml`.
+4. The workflow uploads `BeszelBar-1.0.0.zip` to the GitHub release and generates the matching cask file.
+
+For local preparation before tagging:
+
+```bash
+chmod +x scripts/release-cask.sh
+./scripts/release-cask.sh 1.0.0
+```
+
+The script writes `dist/BeszelBar-1.0.0.zip`, prints the SHA256, and emits the cask body you can publish in the tap.
 
 ## Acknowledgments
 

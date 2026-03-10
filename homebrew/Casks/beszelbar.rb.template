@@ -1,0 +1,23 @@
+cask "beszelbar" do
+  version "__VERSION__"
+  sha256 "__SHA256__"
+
+  url "https://github.com/Loriage/BeszelBar/releases/download/v#{version}/BeszelBar-#{version}.zip",
+      verified: "github.com/Loriage/BeszelBar/"
+  name "BeszelBar"
+  desc "Monitor Beszel hubs from the macOS menu bar"
+  homepage "https://github.com/Loriage/BeszelBar"
+
+  depends_on macos: ">= :sonoma"
+
+  app "BeszelBar.app"
+
+  zap trash: [
+    "~/Library/Application Support/BeszelBar",
+    "~/Library/Caches/com.nohitdev.BeszelBar",
+    "~/Library/HTTPStorages/com.nohitdev.BeszelBar",
+    "~/Library/HTTPStorages/com.nohitdev.BeszelBar.binarycookies",
+    "~/Library/Preferences/com.nohitdev.BeszelBar.plist",
+    "~/Library/Saved Application State/com.nohitdev.BeszelBar.savedState",
+  ]
+end

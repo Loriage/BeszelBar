@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: macos-15
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set version
+        id: version
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            VERSION="$(ruby -e 'puts(File.read(ARGV[0])[/bundleShortVersion":\s*"([^"]+)"/, 1])' project.yml)"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Ensure executable bit
+        run: chmod +x scripts/release-cask.sh
+
+      - name: Build release asset
+        shell: bash
+        run: ./scripts/release-cask.sh "${{ steps.version.outputs.version }}"
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/BeszelBar-${{ steps.version.outputs.version }}.zip
+          generate_release_notes: true
+
+      - name: Upload cask artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: homebrew-cask
+          path: dist/beszelbar.rb
