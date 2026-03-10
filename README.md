@@ -58,10 +58,10 @@ BeszelBar supports both password and JWT token authentication. Tokens are automa
 - macOS 14.0 (Sonoma) or later
 - A running [Beszel](https://github.com/henrygd/beszel) hub instance
 
+## Acknowledgements
+
+A huge thank you to [henrygd](https://github.com/henrygd) for creating Beszel, a fantastic, lightweight, and open-source monitoring tool. This mobile client would not exist without his remarkable work.
+
 ## License
 
 MIT License — see [LICENSE](LICENSE) for details.
-
-## Acknowledgments
-
-- [Beszel](https://github.com/henrygd/beszel) — Lightweight server monitoring hub
