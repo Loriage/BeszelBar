@@ -16,6 +16,8 @@ brew install --cask loriage/tap/beszelbar
 
 Download the latest release from the [Releases](https://github.com/Loriage/BeszelBar/releases) page.
 
+The app is signed and notarized by Apple, so macOS should recognize it as a trusted build when you install it.
+
 ### Build from source
 
 ```bash
