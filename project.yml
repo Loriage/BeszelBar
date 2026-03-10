@@ -2,8 +2,8 @@
   "name": "BeszelBar",
   "options": {
     "bundleIdPrefix": "com.nohitdev",
-    "bundleShortVersion": "1.0.0",
-    "bundleVersion": "1",
+    "bundleShortVersion": "1.0.1",
+    "bundleVersion": "2",
     "deploymentTarget": "14.0",
     "xcodeVersion": "15.0",
     "generateEmptyDirectories": true
@@ -12,6 +12,8 @@
     "base": {
       "SWIFT_VERSION": "5.10",
       "MACOSX_DEPLOYMENT_TARGET": "14.0",
+      "MARKETING_VERSION": "1.0.1",
+      "CURRENT_PROJECT_VERSION": "2",
       "CODE_SIGN_STYLE": "Automatic",
       "ENABLE_HARDENED_RUNTIME": "YES"
     }
