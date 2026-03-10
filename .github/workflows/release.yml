@@ -16,6 +16,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Import signing certificate
+        if: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 != '' }}
+        shell: bash
+        env:
+          APPLE_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          CERT_PATH="$RUNNER_TEMP/developer-id.p12"
+          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
+          if ! echo "$APPLE_CERTIFICATE_P12_BASE64" | base64 -D > "$CERT_PATH" 2>/dev/null; then
+            echo "$APPLE_CERTIFICATE_P12_BASE64" | base64 --decode > "$CERT_PATH"
+          fi
+          security create-keychain -p runner "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p runner "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -P "$APPLE_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH" login.keychain-db
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k runner "$KEYCHAIN_PATH"
+
       - name: Set version
         id: version
         shell: bash
@@ -28,11 +47,24 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Ensure executable bit
-        run: chmod +x scripts/release-cask.sh
+        run: chmod +x scripts/release-cask.sh scripts/sign-and-notarize.sh
 
       - name: Build release asset
         shell: bash
-        run: ./scripts/release-cask.sh "${{ steps.version.outputs.version }}"
+        env:
+          DEVELOPER_ID_APPLICATION: ${{ secrets.DEVELOPER_ID_APPLICATION }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        run: |
+          if [[ -n "${APP_STORE_CONNECT_API_KEY_P8}" && -n "${APP_STORE_CONNECT_KEY_ID}" && -n "${APP_STORE_CONNECT_ISSUER_ID}" ]]; then
+            ./scripts/sign-and-notarize.sh "${{ steps.version.outputs.version }}"
+          else
+            ./scripts/release-cask.sh "${{ steps.version.outputs.version }}"
+          fi
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2

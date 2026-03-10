@@ -78,6 +78,32 @@ chmod +x scripts/release-cask.sh
 
 The script writes `dist/BeszelBar-1.0.0.zip`, prints the SHA256, and emits the cask body you can publish in the tap.
 
+### Signing and notarization
+
+For a release that opens cleanly on macOS, sign with Developer ID and notarize before uploading the archive.
+
+Local release script environment variables:
+
+```bash
+export DEVELOPER_ID_APPLICATION="Developer ID Application: Bruno DURAND (VZFD28P342)"
+export APP_STORE_CONNECT_API_KEY_P8="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+export APP_STORE_CONNECT_KEY_ID="ABC123XYZ"
+export APP_STORE_CONNECT_ISSUER_ID="00000000-0000-0000-0000-000000000000"
+./scripts/sign-and-notarize.sh 1.0.0
+```
+
+GitHub Actions secrets for automated signed releases:
+
+- `APPLE_CERTIFICATE_P12_BASE64`
+- `APPLE_CERTIFICATE_PASSWORD`
+- `DEVELOPER_ID_APPLICATION`
+- `APP_STORE_CONNECT_API_KEY_P8`
+- `APP_STORE_CONNECT_KEY_ID`
+- `APP_STORE_CONNECT_ISSUER_ID`
+- `APPLE_ID`
+- `APPLE_TEAM_ID`
+- `APPLE_APP_SPECIFIC_PASSWORD`
+
 ## Acknowledgments
 
 - [Beszel](https://github.com/henrygd/beszel) — Lightweight server monitoring hub
