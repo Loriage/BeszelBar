@@ -8,7 +8,7 @@ cask "beszelbar" do
   desc "Monitor Beszel hubs from the macOS menu bar"
   homepage "https://github.com/Loriage/BeszelBar"
 
-  depends_on macos: ">= :sonoma"
+  depends_on macos: :sonoma
 
   app "BeszelBar.app"
 
