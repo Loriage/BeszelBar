@@ -181,7 +181,7 @@ struct InstanceRow: View {
     let onEdit: () -> Void
 
     var isSelected: Bool {
-        instance.id == appState.selectedInstance?.id
+        appState.visibleHubs.contains { $0.id == instance.id }
     }
 
     var body: some View {

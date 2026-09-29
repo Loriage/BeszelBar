@@ -39,7 +39,7 @@ open build/Release/BeszelBar.app
 - **Rich system details** — Hover for detailed metrics including temperature, uptime, and usage bars
 - **Container monitoring** — View Docker containers with health status, resource usage, and image info
 - **Alert notifications** — Active alerts displayed prominently with triggering conditions
-- **Multi-hub support** — Connect multiple Beszel instances and switch between them instantly
+- **Multi-hub support** — Connect multiple Beszel instances and switch between them instantly, or show systems from all hubs at once
 - **Native performance** — Built with SwiftUI and AppKit for minimal resource usage
 - **Secure authentication** — Credentials stored safely in macOS Keychain
 - **Auto-refresh** — Configurable polling interval from 10 seconds to 5 minutes

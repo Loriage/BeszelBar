@@ -9,8 +9,13 @@ struct MenuHeaderView: View {
                 VStack(alignment: .leading, spacing: 1) {
                     Text("BeszelBar")
                         .font(.system(size: 13, weight: .semibold))
-                    if let selected = appState.selectedInstance {
-                        Text(selected.name.isEmpty ? selected.url : selected.name)
+                    if appState.isShowingMultipleHubs {
+                        Text("All Hubs")
+                            .font(.system(size: 10))
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    } else if let selected = appState.visibleHubs.first {
+                        Text(selected.displayName)
                             .font(.system(size: 10))
                             .foregroundColor(.secondary)
                             .lineLimit(1)
@@ -19,9 +24,10 @@ struct MenuHeaderView: View {
 
                 Spacer()
 
-                if !appState.selectedInstanceSystems.isEmpty {
-                    let online = appState.selectedInstanceSystems.filter { $0.isOnline }.count
-                    let offline = appState.selectedInstanceSystems.count - online
+                let systems = appState.visibleSystems
+                if !systems.isEmpty {
+                    let online = systems.filter { $0.isOnline }.count
+                    let offline = systems.count - online
 
                     HStack(spacing: 6) {
                         StatusBubble(count: online, color: .green, icon: "checkmark.circle.fill")

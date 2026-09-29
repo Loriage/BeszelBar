@@ -8,12 +8,13 @@ final class AppState {
 
     var instances: [Instance] = []
     var selectedInstance: Instance?
-    var selectedInstanceSystems: [SystemRecord] = []
-    var systemDetails: [String: SystemDetailsRecord] = [:]
-    var containers: [String: [ContainerRecord]] = [:]
-    var activeAlerts: [AlertRecord] = []
+    var showAllHubs = false
+    var systemsByHub: [UUID: [SystemRecord]] = [:]
+    var systemDetails: [UUID: [String: SystemDetailsRecord]] = [:]
+    var containers: [UUID: [String: [ContainerRecord]]] = [:]
+    var alertsByHub: [UUID: [AlertRecord]] = [:]
+    var hubErrors: [UUID: String] = [:]
     var isLoading = false
-    var errorMessage: String?
     var isConfigured = false
 
     private let storage = StorageManager()
@@ -27,113 +28,153 @@ final class AppState {
     private init() {
         loadInstances()
         isConfigured = !instances.isEmpty
-        if selectedInstance != nil {
-            loadSystems()
-            loadSystemDetails()
-            loadAlerts()
-            loadContainers()
+        if !visibleHubs.isEmpty {
+            reloadAll()
         }
     }
 
+    /// Hubs whose systems are currently shown in the menu.
+    var visibleHubs: [Instance] {
+        if showAllHubs {
+            return instances
+        }
+        guard let selected = selectedInstance else { return [] }
+        return [selected]
+    }
+
+    var isShowingMultipleHubs: Bool {
+        visibleHubs.count > 1
+    }
+
+    var visibleSystems: [SystemRecord] {
+        visibleHubs.flatMap { systems(for: $0) }
+    }
+
+    var activeAlerts: [HubAlert] {
+        visibleHubs.flatMap { hub in
+            (alertsByHub[hub.id] ?? []).map { HubAlert(hub: hub, alert: $0) }
+        }
+    }
+
+    func systems(for hub: Instance) -> [SystemRecord] {
+        systemsByHub[hub.id] ?? []
+    }
+
+    func reloadAll() {
+        loadSystems()
+        loadSystemDetails()
+        loadAlerts()
+        loadContainers()
+    }
+
     func loadSystems() {
-        guard let instance = selectedInstance else { return }
+        let hubs = visibleHubs
+        guard !hubs.isEmpty else { return }
 
         loadTask?.cancel()
         loadTask = Task {
             isLoading = true
-            errorMessage = nil
 
             defer { isLoading = false }
 
-            do {
-                let service = getOrCreateService(for: instance)
-                let systems = try await service.fetchSystems()
-                guard !Task.isCancelled else { return }
-                selectedInstanceSystems = systems.sorted { $0.name < $1.name }
-            } catch is CancellationError {
-                return
-            } catch {
-                guard !Task.isCancelled else { return }
-                errorMessage = error.localizedDescription
+            let results = await fetchFromHubs(hubs) { try await $0.fetchSystems() }
+            guard !Task.isCancelled else { return }
+
+            var updatedSystems = systemsByHub
+            var updatedErrors = hubErrors
+            for (hubID, result) in results {
+                switch result {
+                case .success(let systems):
+                    updatedSystems[hubID] = systems.sorted { $0.name < $1.name }
+                    updatedErrors[hubID] = nil
+                case .failure(let error):
+                    if error is CancellationError { continue }
+                    updatedErrors[hubID] = error.localizedDescription
+                }
             }
+            systemsByHub = updatedSystems
+            hubErrors = updatedErrors
         }
     }
 
     func loadSystemDetails() {
-        guard let instance = selectedInstance else { return }
+        let hubs = visibleHubs
+        guard !hubs.isEmpty else { return }
 
         detailsTask?.cancel()
         detailsTask = Task {
-            do {
-                let service = getOrCreateService(for: instance)
-                let details = try await service.fetchSystemDetails()
-                guard !Task.isCancelled else { return }
+            let results = await fetchFromHubs(hubs) { try await $0.fetchSystemDetails() }
+            guard !Task.isCancelled else { return }
+
+            var updated = systemDetails
+            for (hubID, result) in results {
+                guard case .success(let details) = result else { continue }
 
                 var mapped: [String: SystemDetailsRecord] = [:]
                 for detail in details {
                     mapped[detail.system] = detail
                 }
-                systemDetails = mapped
-            } catch is CancellationError {
-                return
-            } catch {
-                guard !Task.isCancelled else { return }
+                updated[hubID] = mapped
             }
+            systemDetails = updated
         }
     }
 
     func loadAlerts() {
-        guard let instance = selectedInstance else { return }
+        let hubs = visibleHubs
+        guard !hubs.isEmpty else { return }
 
         alertTask?.cancel()
         alertTask = Task {
-            do {
-                let service = getOrCreateService(for: instance)
-                let alerts = try await service.fetchAlerts(filter: "enabled = true")
-                guard !Task.isCancelled else { return }
-                activeAlerts = alerts.filter { $0.triggered == true }
-            } catch is CancellationError {
-                return
-            } catch {
-                guard !Task.isCancelled else { return }
+            let results = await fetchFromHubs(hubs) { try await $0.fetchAlerts(filter: "enabled = true") }
+            guard !Task.isCancelled else { return }
+
+            var updated = alertsByHub
+            for (hubID, result) in results {
+                guard case .success(let alerts) = result else { continue }
+                updated[hubID] = alerts.filter { $0.triggered == true }
             }
+            alertsByHub = updated
         }
     }
 
     func loadContainers() {
-        guard let instance = selectedInstance else { return }
+        let hubs = visibleHubs
+        guard !hubs.isEmpty else { return }
 
         containerTask?.cancel()
         containerTask = Task {
-            do {
-                let service = getOrCreateService(for: instance)
-                let allContainers = try await service.fetchContainers()
-                guard !Task.isCancelled else { return }
+            let results = await fetchFromHubs(hubs) { try await $0.fetchContainers() }
+            guard !Task.isCancelled else { return }
+
+            var updated = containers
+            for (hubID, result) in results {
+                guard case .success(let allContainers) = result else { continue }
 
                 var grouped: [String: [ContainerRecord]] = [:]
                 for container in allContainers {
                     grouped[container.system, default: []].append(container)
                 }
-                containers = grouped
-            } catch is CancellationError {
-                return
-            } catch {
-                guard !Task.isCancelled else { return }
+                updated[hubID] = grouped
             }
+            containers = updated
         }
     }
 
     func selectInstance(_ instance: Instance?) {
         selectedInstance = instance
-        selectedInstanceSystems = []
-        systemDetails = [:]
-        containers = [:]
-        activeAlerts = []
-        loadSystems()
-        loadSystemDetails()
-        loadAlerts()
-        loadContainers()
+        showAllHubs = false
+        clearHubData()
+        reloadAll()
         storage.saveSelectedInstanceID(instance?.id)
+        storage.saveShowAllHubs(false)
+    }
+
+    func selectAllHubs() {
+        showAllHubs = true
+        clearHubData()
+        reloadAll()
+        storage.saveShowAllHubs(true)
     }
 
     func addInstance(_ instance: Instance) {
@@ -145,7 +186,9 @@ final class AppState {
         saveInstances()
 
         if selectedInstance == nil {
-            selectInstance(instance)
+            selectInstance(storedInstance)
+        } else if showAllHubs {
+            reloadAll()
         }
         isConfigured = true
     }
@@ -155,18 +198,14 @@ final class AppState {
         apiServices.removeValue(forKey: instance.id)
         instances.removeAll { $0.id == instance.id }
         saveInstances()
+        clearHubData(for: instance.id)
 
         if selectedInstance?.id == instance.id {
             selectedInstance = instances.first
-            selectedInstanceSystems = []
-            systemDetails = [:]
-            containers = [:]
-            activeAlerts = []
-            if selectedInstance != nil {
-                loadSystems()
-                loadSystemDetails()
-                loadAlerts()
-                loadContainers()
+            storage.saveSelectedInstanceID(selectedInstance?.id)
+            if !showAllHubs {
+                clearHubData()
+                reloadAll()
             }
         }
         isConfigured = !instances.isEmpty
@@ -179,15 +218,21 @@ final class AppState {
 
         apiServices.removeValue(forKey: instance.id)
 
+        var storedInstance = instance
+        storedInstance.credential = ""
+
         if let index = instances.firstIndex(where: { $0.id == instance.id }) {
-            var storedInstance = instance
-            storedInstance.credential = ""
             instances[index] = storedInstance
             saveInstances()
         }
 
         if selectedInstance?.id == instance.id {
-            selectInstance(instance)
+            selectedInstance = storedInstance
+        }
+
+        if visibleHubs.contains(where: { $0.id == instance.id }) {
+            clearHubData(for: instance.id)
+            reloadAll()
         }
     }
 
@@ -195,6 +240,50 @@ final class AppState {
         var fullInstance = instance
         fullInstance.credential = keychain.loadCredential(for: instance.id.uuidString) ?? ""
         return fullInstance
+    }
+
+    private func clearHubData() {
+        systemsByHub = [:]
+        systemDetails = [:]
+        containers = [:]
+        alertsByHub = [:]
+        hubErrors = [:]
+    }
+
+    private func clearHubData(for hubID: UUID) {
+        systemsByHub[hubID] = nil
+        systemDetails[hubID] = nil
+        containers[hubID] = nil
+        alertsByHub[hubID] = nil
+        hubErrors[hubID] = nil
+    }
+
+    /// Runs `fetch` against every hub concurrently and collects a result per hub,
+    /// so one unreachable hub doesn't prevent the others from loading.
+    private func fetchFromHubs<T: Sendable>(
+        _ hubs: [Instance],
+        _ fetch: @escaping @Sendable (BeszelAPIService) async throws -> T
+    ) async -> [UUID: Result<T, Error>] {
+        let services = hubs.map { ($0.id, getOrCreateService(for: $0)) }
+
+        return await withTaskGroup(of: (UUID, Result<T, Error>).self) { group in
+            for (hubID, service) in services {
+                group.addTask {
+                    do {
+                        let value = try await fetch(service)
+                        return (hubID, .success(value))
+                    } catch {
+                        return (hubID, .failure(error))
+                    }
+                }
+            }
+
+            var results: [UUID: Result<T, Error>] = [:]
+            for await (hubID, result) in group {
+                results[hubID] = result
+            }
+            return results
+        }
     }
 
     private func loadInstances() {
@@ -206,6 +295,8 @@ final class AppState {
         } else {
             selectedInstance = instances.first
         }
+
+        showAllHubs = storage.loadShowAllHubs()
     }
 
     private func saveInstances() {
@@ -224,6 +315,14 @@ final class AppState {
     }
 }
 
+struct HubAlert: Identifiable {
+    let hub: Instance
+    let alert: AlertRecord
+
+    var id: String { "\(hub.id.uuidString)-\(alert.id)" }
+}
+
+
 struct Instance: Identifiable, Codable, Equatable, Hashable {
     let id: UUID
     var name: String
@@ -237,6 +336,10 @@ struct Instance: Identifiable, Codable, Equatable, Hashable {
         self.url = url
         self.email = email
         self.credential = credential
+    }
+
+    var displayName: String {
+        name.isEmpty ? url : name
     }
 
     enum CodingKeys: String, CodingKey {
@@ -273,6 +376,7 @@ final class StorageManager {
     private let defaults = UserDefaults.standard
     private let instancesKey = "com.nohitdev.BeszelBar.instances"
     private let selectedInstanceKey = "com.nohitdev.BeszelBar.selectedInstance"
+    private let showAllHubsKey = "com.nohitdev.BeszelBar.showAllHubs"
 
     func saveInstances(_ instances: [Instance]) {
         guard let data = try? JSONEncoder().encode(instances) else { return }
@@ -298,5 +402,13 @@ final class StorageManager {
     func loadSelectedInstanceID() -> UUID? {
         guard let string = defaults.string(forKey: selectedInstanceKey) else { return nil }
         return UUID(uuidString: string)
+    }
+
+    func saveShowAllHubs(_ showAll: Bool) {
+        defaults.set(showAll, forKey: showAllHubsKey)
+    }
+
+    func loadShowAllHubs() -> Bool {
+        defaults.bool(forKey: showAllHubsKey)
     }
 }

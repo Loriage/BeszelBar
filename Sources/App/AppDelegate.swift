@@ -35,11 +35,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     withObservationTracking {
                         _ = AppState.shared.instances
                         _ = AppState.shared.selectedInstance
-                        _ = AppState.shared.selectedInstanceSystems
+                        _ = AppState.shared.showAllHubs
+                        _ = AppState.shared.systemsByHub
                         _ = AppState.shared.isLoading
-                        _ = AppState.shared.activeAlerts
+                        _ = AppState.shared.alertsByHub
                         _ = AppState.shared.systemDetails
                         _ = AppState.shared.containers
+                        _ = AppState.shared.hubErrors
                     } onChange: {
                         continuation.resume()
                     }
