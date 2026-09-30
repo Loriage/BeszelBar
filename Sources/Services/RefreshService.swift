@@ -48,6 +48,7 @@ final class RefreshService {
         AppState.shared.loadSystems()
         AppState.shared.loadAlerts()
         AppState.shared.loadContainers()
+        AppState.shared.loadPinnedSystem()
     }
 }
 

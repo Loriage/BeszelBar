@@ -12,6 +12,7 @@ final class AppState {
     var systemDetails: [String: SystemDetailsRecord] = [:]
     var containers: [String: [ContainerRecord]] = [:]
     var activeAlerts: [AlertRecord] = []
+    var pinnedSystem: SystemRecord?
     var isLoading = false
     var errorMessage: String?
     var isConfigured = false
@@ -23,6 +24,7 @@ final class AppState {
     private var detailsTask: Task<Void, Never>?
     private var alertTask: Task<Void, Never>?
     private var containerTask: Task<Void, Never>?
+    private var pinnedTask: Task<Void, Never>?
 
     private init() {
         loadInstances()
@@ -123,6 +125,54 @@ final class AppState {
         }
     }
 
+    /// The system whose stats are shown next to the menu bar icon, if one is pinned.
+    var menuBarSystem: SystemRecord? {
+        guard let settings = MenuBarStatsSettings.current() else { return nil }
+
+        if settings.hubID == selectedInstance?.id {
+            return selectedInstanceSystems.first { $0.id == settings.systemID }
+        }
+        return pinnedSystem?.id == settings.systemID ? pinnedSystem : nil
+    }
+
+    /// Fetches the pinned system when it belongs to a hub other than the selected one.
+    /// Systems of the selected hub are already loaded by `loadSystems()`.
+    func loadPinnedSystem() {
+        pinnedTask?.cancel()
+
+        guard let settings = MenuBarStatsSettings.current(),
+              settings.hubID != selectedInstance?.id,
+              let hub = instances.first(where: { $0.id == settings.hubID }) else {
+            pinnedSystem = nil
+            return
+        }
+
+        pinnedTask = Task {
+            do {
+                let service = getOrCreateService(for: hub)
+                let system = try await service.fetchSystem(id: settings.systemID)
+                guard !Task.isCancelled else { return }
+                pinnedSystem = system
+            } catch is CancellationError {
+                return
+            } catch {
+                guard !Task.isCancelled else { return }
+            }
+        }
+    }
+
+    /// Fetches the systems of every hub, for choosing which one to pin in Settings.
+    /// Hubs that can't be reached are returned with no systems.
+    func fetchSystemsForAllHubs() async -> [(hub: Instance, systems: [SystemRecord])] {
+        var result: [(hub: Instance, systems: [SystemRecord])] = []
+        for hub in instances {
+            let service = getOrCreateService(for: hub)
+            let systems = (try? await service.fetchSystems()) ?? []
+            result.append((hub: hub, systems: systems.sorted { $0.name < $1.name }))
+        }
+        return result
+    }
+
     func selectInstance(_ instance: Instance?) {
         selectedInstance = instance
         selectedInstanceSystems = []
@@ -134,6 +184,7 @@ final class AppState {
         loadAlerts()
         loadContainers()
         storage.saveSelectedInstanceID(instance?.id)
+        loadPinnedSystem()
     }
 
     func addInstance(_ instance: Instance) {
@@ -169,6 +220,7 @@ final class AppState {
                 loadContainers()
             }
         }
+        loadPinnedSystem()
         isConfigured = !instances.isEmpty
     }
 

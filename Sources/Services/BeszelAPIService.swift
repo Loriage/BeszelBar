@@ -130,6 +130,23 @@ final class BeszelAPIService: @unchecked Sendable {
         return response.items
     }
 
+    /// Returns nil when the system no longer exists on the hub.
+    func fetchSystem(id: String) async throws -> SystemRecord? {
+        guard let url = URL(string: "\(instance.url)/api/collections/systems/records/\(id)") else {
+            throw URLError(.badURL)
+        }
+
+        do {
+            let system: SystemRecord = try await performRequest(with: url)
+            return system
+        } catch let error as BeszelAPIError {
+            if case .httpError(let statusCode, _) = error, statusCode == 404 {
+                return nil
+            }
+            throw error
+        }
+    }
+
     func fetchSystemDetails() async throws -> [SystemDetailsRecord] {
         guard let url = URL(string: "\(instance.url)/api/collections/system_details/records") else {
             throw URLError(.badURL)

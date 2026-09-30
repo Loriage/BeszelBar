@@ -22,7 +22,7 @@ struct SettingsView: View {
             Group {
                 switch selectedTab {
                 case .general:
-                    GeneralView()
+                    GeneralView(appState: appState)
                 case .hubs:
                     HubsView(appState: appState)
                 case .about:
@@ -446,6 +446,7 @@ struct EditHubSheet: View {
 }
 
 struct GeneralView: View {
+    var appState: AppState
     @AppStorage("refreshInterval") private var refreshInterval = 30
     @AppStorage("launchAtLogin") private var launchAtLogin = false
 
@@ -491,6 +492,15 @@ struct GeneralView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)
+
+                Divider()
+                    .padding(.horizontal, 20)
+
+                SectionHeader(title: "MENU BAR")
+
+                MenuBarStatsSettingsView(appState: appState)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -515,6 +525,77 @@ struct GeneralView: View {
             }
         } catch {
             print("Failed to set launch at login: \(error)")
+        }
+    }
+}
+
+struct MenuBarStatsSettingsView: View {
+    var appState: AppState
+
+    @AppStorage(MenuBarStatsSettings.systemKey) private var pinnedSystem = ""
+    @AppStorage(MenuBarStatsSettings.showCPUKey) private var showCPU = true
+    @AppStorage(MenuBarStatsSettings.showMemoryKey) private var showMemory = true
+    @AppStorage(MenuBarStatsSettings.showDiskKey) private var showDisk = false
+    @AppStorage(MenuBarStatsSettings.showTemperatureKey) private var showTemperature = false
+    @AppStorage(MenuBarStatsSettings.colorThresholdsKey) private var colorThresholds = true
+    @AppStorage(MenuBarStatsSettings.hideIconKey) private var hideIcon = false
+
+    @State private var hubSystems: [(hub: Instance, systems: [SystemRecord])] = []
+    @State private var isLoadingSystems = true
+
+    private var pinnedSystemIsListed: Bool {
+        hubSystems.contains { entry in
+            entry.systems.contains {
+                MenuBarStatsSettings.pinValue(hubID: entry.hub.id, systemID: $0.id) == pinnedSystem
+            }
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Show stats for")
+                Spacer()
+                Picker("", selection: $pinnedSystem) {
+                    Text("None").tag("")
+
+                    if !pinnedSystem.isEmpty && !pinnedSystemIsListed {
+                        Text(isLoadingSystems ? "Loading..." : "Unavailable system").tag(pinnedSystem)
+                    }
+
+                    ForEach(hubSystems, id: \.hub.id) { entry in
+                        Section(entry.hub.name.isEmpty ? entry.hub.url : entry.hub.name) {
+                            ForEach(entry.systems) { system in
+                                Text(system.name.isEmpty ? system.id : system.name)
+                                    .tag(MenuBarStatsSettings.pinValue(hubID: entry.hub.id, systemID: system.id))
+                            }
+                        }
+                    }
+                }
+                .labelsHidden()
+                .frame(width: 200)
+            }
+
+            if !pinnedSystem.isEmpty {
+                HStack(spacing: 16) {
+                    Toggle("CPU", isOn: $showCPU)
+                    Toggle("Memory", isOn: $showMemory)
+                    Toggle("Disk", isOn: $showDisk)
+                    Toggle("Temperature", isOn: $showTemperature)
+                }
+                .toggleStyle(.checkbox)
+
+                Toggle("Color values in orange/red when they get high", isOn: $colorThresholds)
+                Toggle("Hide app icon while stats are shown", isOn: $hideIcon)
+            }
+
+            Text("Show live stats from one system next to the menu bar icon.")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .task {
+            hubSystems = await appState.fetchSystemsForAllHubs()
+            isLoadingSystems = false
         }
     }
 }

@@ -213,3 +213,48 @@ struct PocketBaseListResponse<T: Codable>: Codable {
 struct AuthResponse: Codable {
     let token: String
 }
+
+/// Settings for showing a pinned system's stats next to the menu bar icon.
+/// Stored in UserDefaults so they can be bound with @AppStorage in Settings.
+struct MenuBarStatsSettings {
+    static let systemKey = "menuBarStatsSystem"
+    static let showCPUKey = "menuBarStatsShowCPU"
+    static let showMemoryKey = "menuBarStatsShowMemory"
+    static let showDiskKey = "menuBarStatsShowDisk"
+    static let showTemperatureKey = "menuBarStatsShowTemperature"
+    static let colorThresholdsKey = "menuBarStatsColorThresholds"
+    static let hideIconKey = "menuBarStatsHideIcon"
+
+    let hubID: UUID
+    let systemID: String
+    let showCPU: Bool
+    let showMemory: Bool
+    let showDisk: Bool
+    let showTemperature: Bool
+    let colorThresholds: Bool
+    let hideIcon: Bool
+
+    /// The value stored under `systemKey`, identifying a system on a specific hub.
+    static func pinValue(hubID: UUID, systemID: String) -> String {
+        "\(hubID.uuidString)/\(systemID)"
+    }
+
+    /// Returns nil when no system is pinned.
+    static func current(_ defaults: UserDefaults = .standard) -> MenuBarStatsSettings? {
+        guard let value = defaults.string(forKey: systemKey) else { return nil }
+
+        let parts = value.split(separator: "/", maxSplits: 1).map(String.init)
+        guard parts.count == 2, let hubID = UUID(uuidString: parts[0]), !parts[1].isEmpty else { return nil }
+
+        return MenuBarStatsSettings(
+            hubID: hubID,
+            systemID: parts[1],
+            showCPU: defaults.object(forKey: showCPUKey) as? Bool ?? true,
+            showMemory: defaults.object(forKey: showMemoryKey) as? Bool ?? true,
+            showDisk: defaults.object(forKey: showDiskKey) as? Bool ?? false,
+            showTemperature: defaults.object(forKey: showTemperatureKey) as? Bool ?? false,
+            colorThresholds: defaults.object(forKey: colorThresholdsKey) as? Bool ?? true,
+            hideIcon: defaults.object(forKey: hideIconKey) as? Bool ?? false
+        )
+    }
+}
