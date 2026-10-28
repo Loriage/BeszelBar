@@ -89,7 +89,7 @@ final class AppState {
         alertTask = Task {
             do {
                 let service = getOrCreateService(for: instance)
-                let alerts = try await service.fetchAlerts(filter: "enabled = true")
+                let alerts = try await service.fetchAlerts()
                 guard !Task.isCancelled else { return }
                 activeAlerts = alerts.filter { $0.triggered == true }
             } catch is CancellationError {
