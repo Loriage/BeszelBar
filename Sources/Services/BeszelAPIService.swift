@@ -22,8 +22,11 @@ final class BeszelAPIService: @unchecked Sendable {
     }
 
     private func getValidToken() async throws -> String {
-        if let currentToken = authToken {
-            return currentToken
+        lock.lock()
+        let cached = authToken
+        lock.unlock()
+        if let cached, !TokenExpiry.needsRenewal(cached) {
+            return cached
         }
 
         let cred = instance.credential
@@ -32,7 +35,8 @@ final class BeszelAPIService: @unchecked Sendable {
         }
 
         if isJWT(cred) {
-            return try await refreshToken(currentToken: cred)
+            // The pasted token only works until it expires, so renew the newest one we hold.
+            return try await refreshToken(currentToken: cached ?? cred)
         } else {
             return try await loginWithPassword(password: cred)
         }
