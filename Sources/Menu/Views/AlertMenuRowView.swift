@@ -46,8 +46,7 @@ struct AlertMenuRowView: View {
     }
 
     private var alertIcon: String {
-        guard let metric = alert.metric?.lowercased() else { return "exclamationmark.triangle" }
-        switch metric {
+        switch alert.name.lowercased() {
         case "cpu": return "cpu"
         case "memory", "mem": return "memorychip"
         case "disk": return "internaldrive"
