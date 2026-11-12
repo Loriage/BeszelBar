@@ -168,23 +168,20 @@ struct ContainerStatsRecord: Identifiable, Codable {
     var memory: Double? { mem }
 }
 
+/// A Beszel alert rule: `name` is the metric (CPU, Memory, Disk, ...) and `value` its threshold.
 struct AlertRecord: Identifiable, Codable {
     let id: String
     let name: String
     let system: String?
-    let metric: String?
-    let threshold: Double?
-    let enabled: Bool?
+    let value: Double?
     let triggered: Bool?
     let created: String?
     let updated: String?
 
-    var displayMetric: String {
-        metric ?? "unknown"
-    }
+    var displayMetric: String { name }
 
     var displayThreshold: String {
-        if let t = threshold {
+        if let t = value {
             return String(format: "%.0f", t)
         }
         return "-"
