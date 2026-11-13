@@ -17,7 +17,7 @@ final class WindowManager {
                let instance = state.instances.first(where: { $0.id == systemID.hubID }) {
                 state.selectInstance(instance)
             }
-            navigation.section = .overview
+            navigation.show(.overview)
             navigation.systemID = systemID
         }
         if let window = dashboardWindow {

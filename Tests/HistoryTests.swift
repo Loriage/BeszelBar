@@ -24,4 +24,52 @@ final class HistoryTests: XCTestCase {
         XCTAssertEqual(HistoryMetric.upload.value(in: legacy), 1)
         XCTAssertEqual(HistoryMetric.download.value(in: legacy), 2)
     }
+
+    func testPartialRefreshRetainsDockerHistoryAndReportsFailure() async throws {
+        let now = Date()
+        let service = ChartHistoryService()
+        let initial = try await ChartDataLoader.load(service: service, systemID: "server", range: .hour, now: now)
+        XCTAssertFalse(initial.containers.isEmpty)
+
+        await service.setContainerResponse(fails: true)
+        let refreshed = try await ChartDataLoader.load(service: service, systemID: "server", range: .hour,
+            now: now.addingTimeInterval(60), previous: initial)
+        XCTAssertEqual(refreshed.containerRecords.map(\.id), initial.containerRecords.map(\.id))
+        XCTAssertEqual(refreshed.cpu.last?.yEnd, initial.cpu.last?.yEnd)
+        XCTAssertEqual(refreshed.records.last?.created, initial.records.last?.created.addingTimeInterval(60))
+        XCTAssertTrue(refreshed.notices.contains { $0.hasPrefix("Container history:") })
+
+        let withoutPrevious = try await ChartDataLoader.load(service: service, systemID: "another-server", range: .day, now: now)
+        XCTAssertTrue(withoutPrevious.containers.isEmpty)
+        XCTAssertFalse(withoutPrevious.notices.isEmpty)
+    }
+
+    func testSuccessfulEmptyDockerResponseClearsPreviousHistory() async throws {
+        let service = ChartHistoryService()
+        let initial = try await ChartDataLoader.load(service: service, systemID: "server", range: .hour, now: Date())
+        await service.setContainerResponse(fails: false, empty: true)
+        let refreshed = try await ChartDataLoader.load(service: service, systemID: "server", range: .hour,
+            now: Date(), previous: initial)
+        XCTAssertTrue(refreshed.containers.isEmpty)
+        XCTAssertTrue(refreshed.cpu.isEmpty)
+        XCTAssertTrue(refreshed.notices.isEmpty)
+    }
+}
+
+private actor ChartHistoryService: BeszelServing {
+    private var fails = false
+    private var empty = false
+    func setContainerResponse(fails: Bool, empty: Bool = false) { self.fails = fails; self.empty = empty }
+    func fetchSystems() async throws -> [SystemRecord] { [] }
+    func fetchSystemDetails() async throws -> [SystemDetailsRecord] { [] }
+    func fetchContainers(filter: String?) async throws -> [ContainerRecord] { [] }
+    func fetchAlerts(filter: String?) async throws -> [AlertRecord] { [] }
+    func fetchHistory(systemID: String, range: HistoryRange, now: Date) async throws -> [SystemStatsRecord] { [] }
+    func fetchDetailedHistory(systemID: String, range: HistoryRange, now: Date) async throws -> [DetailedSystemRecord] {
+        try ChartFixtures.data(now: now).records
+    }
+    func fetchContainerHistory(systemID: String, range: HistoryRange, now: Date) async throws -> [DetailedContainerRecord] {
+        if fails { throw URLError(.cannotConnectToHost) }
+        return empty ? [] : try ChartFixtures.data(now: now).containerRecords
+    }
 }

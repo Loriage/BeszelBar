@@ -3,6 +3,7 @@ import Foundation
 /// Prepares the iOS chart input once per response, not during SwiftUI rendering.
 struct ChartDataSet {
     var records: [DetailedSystemRecord] = []
+    var containerRecords: [DetailedContainerRecord] = []
     var points: [SystemDataPoint] = []
     var containers: [ProcessedContainerData] = []
     var cpu: [StackedCpuData] = []
@@ -20,6 +21,7 @@ struct ChartDataSet {
     init(records: [DetailedSystemRecord] = [], containerRecords: [DetailedContainerRecord] = [],
          pools: [ZFSPoolRecord] = [], notices: [String] = []) {
         self.records = records.sorted { $0.created < $1.created }
+        self.containerRecords = containerRecords
         points = records.asDataPoints()
         containers = containerRecords.asProcessedData().sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
         self.pools = pools

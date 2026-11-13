@@ -77,10 +77,10 @@ struct SystemChartsPanel: View {
     }
     private var visibleCards: [ChartDescriptor] {
         cards.filter { card in
-            guard (card.category == .containers) == showsContainerCharts else { return false }
             if category == .pinned {
                 return card.pin.map { pins.isPinned($0, onSystem: entry.id.chartScope) } ?? false
             }
+            guard (card.category == .containers) == showsContainerCharts else { return false }
             if let name = card.containerName { return category == .containers && name == containerName }
             return category == .all || card.category == category
         }
@@ -135,7 +135,8 @@ struct SystemChartsPanel: View {
         let now = Date()
         do {
             let result = try await ChartDataLoader.load(service: appState.chartService(for: entry.id),
-                                                       systemID: entry.system.id, range: request.range, now: now)
+                systemID: entry.system.id, range: request.range, now: now,
+                previous: request.hasSameContent(as: loaded) ? data : nil)
             try Task.checkCancellation()
             data = result
             cards = ChartCatalog.cards(in: result)
