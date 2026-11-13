@@ -26,12 +26,16 @@ final class MenuActions: NSObject {
         }
     }
 
+    @objc func showAllHubs(_ sender: NSMenuItem) {
+        Task { @MainActor in
+            AppState.shared.selectAllHubs()
+        }
+    }
+
     @objc func openSystemInBrowser(_ sender: NSMenuItem) {
         Task { @MainActor in
-            guard let systemID = sender.representedObject as? String,
-                  let instance = AppState.shared.selectedInstance else { return }
+            guard let urlString = sender.representedObject as? String else { return }
 
-            let urlString = "\(instance.url)/#/systems/\(systemID)"
             if let url = URL(string: urlString) {
                 NSWorkspace.shared.open(url)
             }

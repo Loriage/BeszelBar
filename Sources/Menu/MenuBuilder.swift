@@ -16,33 +16,24 @@ enum MenuBuilder {
         headerItem.view = headerView
         menu.addItem(headerItem)
 
-        if !appState.activeAlerts.isEmpty {
-            menu.addItem(createAlertsSubmenu(alerts: appState.activeAlerts, systems: appState.selectedInstanceSystems))
+        let alerts = appState.activeAlerts
+        if !alerts.isEmpty {
+            menu.addItem(createAlertsSubmenu(alerts: alerts, appState: appState))
             menu.addItem(NSMenuItem.separator())
         }
 
         if appState.instances.isEmpty {
             menu.addItem(createInfoItem("No Hub Configured", subtext: "Open Settings to add a hub"))
-        } else if appState.isLoading {
+        } else if appState.isLoading && appState.visibleSystems.isEmpty && appState.hubErrors.isEmpty {
             let item = NSMenuItem(title: "Loading...", action: nil, keyEquivalent: "")
             item.isEnabled = false
             menu.addItem(item)
-        } else if appState.selectedInstanceSystems.isEmpty {
-            menu.addItem(createInfoItem("No Systems Found", subtext: "Check your hub configuration"))
         } else {
-            for system in appState.selectedInstanceSystems.prefix(15) {
-                let item = createSystemItem(for: system, appState: appState)
-                menu.addItem(item)
-            }
-
-            if appState.selectedInstanceSystems.count > 15 {
-                let more = NSMenuItem(title: "+\(appState.selectedInstanceSystems.count - 15) more systems", action: nil, keyEquivalent: "")
-                more.isEnabled = false
-                more.attributedTitle = NSAttributedString(
-                    string: "+\(appState.selectedInstanceSystems.count - 15) more systems",
-                    attributes: [.foregroundColor: NSColor.secondaryLabelColor]
-                )
-                menu.addItem(more)
+            for hub in appState.visibleHubs {
+                if appState.isShowingMultipleHubs {
+                    menu.addItem(NSMenuItem.sectionHeader(title: hub.displayName))
+                }
+                addSystemItems(for: hub, to: menu, appState: appState)
             }
         }
 
@@ -91,16 +82,27 @@ enum MenuBuilder {
         item.image?.size = NSSize(width: 14, height: 14)
 
         let submenu = NSMenu()
+
+        let allHubsItem = NSMenuItem(
+            title: "All Hubs",
+            action: #selector(MenuActions.showAllHubs(_:)),
+            keyEquivalent: ""
+        )
+        allHubsItem.target = MenuActions.shared
+        allHubsItem.state = appState.showAllHubs ? .on : .off
+        submenu.addItem(allHubsItem)
+        submenu.addItem(NSMenuItem.separator())
+
         for instance in appState.instances {
             let hubItem = NSMenuItem(
-                title: instance.name.isEmpty ? instance.url : instance.name,
+                title: instance.displayName,
                 action: #selector(MenuActions.switchHub(_:)),
                 keyEquivalent: ""
             )
             hubItem.target = MenuActions.shared
             hubItem.representedObject = instance.id
 
-            if instance.id == appState.selectedInstance?.id {
+            if !appState.showAllHubs && instance.id == appState.selectedInstance?.id {
                 hubItem.state = .on
             }
 
@@ -111,7 +113,7 @@ enum MenuBuilder {
         return item
     }
 
-    private static func createAlertsSubmenu(alerts: [AlertRecord], systems: [SystemRecord]) -> NSMenuItem {
+    private static func createAlertsSubmenu(alerts: [HubAlert], appState: AppState) -> NSMenuItem {
         let item = NSMenuItem(title: "Alerts (\(alerts.count))", action: nil, keyEquivalent: "")
         item.image = NSImage(systemSymbolName: "exclamationmark.triangle.fill", accessibilityDescription: nil)
         item.image?.size = NSSize(width: 14, height: 14)
@@ -119,8 +121,12 @@ enum MenuBuilder {
 
         let submenu = NSMenu()
 
-        for alert in alerts.prefix(10) {
-            let systemName = systems.first(where: { $0.id == alert.system })?.name ?? alert.system ?? "Unknown"
+        for hubAlert in alerts.prefix(10) {
+            let alert = hubAlert.alert
+            var systemName = appState.systems(for: hubAlert.hub).first(where: { $0.id == alert.system })?.name ?? alert.system ?? "Unknown"
+            if appState.isShowingMultipleHubs {
+                systemName += " (\(hubAlert.hub.displayName))"
+            }
             let alertItem = NSMenuItem()
 
             let view = NSHostingView(rootView: AlertMenuRowView(alert: alert, systemName: systemName))
@@ -150,14 +156,46 @@ enum MenuBuilder {
         return item
     }
 
-    private static func createSystemItem(for system: SystemRecord, appState: AppState) -> NSMenuItem {
+    private static func addSystemItems(for hub: Instance, to menu: NSMenu, appState: AppState) {
+        let systems = appState.systems(for: hub)
+
+        if systems.isEmpty {
+            if let error = appState.hubErrors[hub.id] {
+                menu.addItem(createInfoItem("Hub Unreachable", subtext: error))
+            } else {
+                menu.addItem(createInfoItem("No Systems Found", subtext: "Check your hub configuration"))
+            }
+            return
+        }
+
+        for system in systems.prefix(15) {
+            menu.addItem(createSystemItem(for: system, hub: hub, appState: appState))
+        }
+
+        if systems.count > 15 {
+            let title = "+\(systems.count - 15) more systems"
+            let more = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+            more.isEnabled = false
+            more.attributedTitle = NSAttributedString(
+                string: title,
+                attributes: [.foregroundColor: NSColor.secondaryLabelColor]
+            )
+            menu.addItem(more)
+        }
+    }
+
+    private static func systemURL(for system: SystemRecord, hub: Instance) -> String {
+        "\(hub.url)/#/systems/\(system.id)"
+    }
+
+    private static func createSystemItem(for system: SystemRecord, hub: Instance, appState: AppState) -> NSMenuItem {
         let item = NSMenuItem(
             title: system.name.isEmpty ? system.id : system.name,
             action: #selector(MenuActions.openSystemInBrowser(_:)),
             keyEquivalent: ""
         )
         item.target = MenuActions.shared
-        item.representedObject = system.id
+        item.representedObject = systemURL(for: system, hub: hub)
 
         let hostingView = NSHostingView(rootView: SystemMenuRowView(system: system))
         hostingView.frame = NSRect(x: 0, y: 0, width: menuWidth, height: 44)
@@ -172,17 +210,17 @@ enum MenuBuilder {
 
         item.view = wrapper
 
-        let containers = appState.containers[system.id] ?? []
-        let submenu = createSystemSubmenu(for: system, containers: containers, appState: appState)
+        let containers = appState.containers[hub.id]?[system.id] ?? []
+        let submenu = createSystemSubmenu(for: system, hub: hub, containers: containers, appState: appState)
         item.submenu = submenu
 
         return item
     }
 
-    private static func createSystemSubmenu(for system: SystemRecord, containers: [ContainerRecord], appState: AppState) -> NSMenu {
+    private static func createSystemSubmenu(for system: SystemRecord, hub: Instance, containers: [ContainerRecord], appState: AppState) -> NSMenu {
         let submenu = NSMenu()
 
-        let details = appState.systemDetails[system.id]
+        let details = appState.systemDetails[hub.id]?[system.id]
 
         let detailItem = NSMenuItem()
         let detailView = NSHostingView(rootView: SystemDetailView(system: system, details: details))
@@ -244,7 +282,7 @@ enum MenuBuilder {
             keyEquivalent: ""
         )
         openItem.target = MenuActions.shared
-        openItem.representedObject = system.id
+        openItem.representedObject = systemURL(for: system, hub: hub)
         openItem.image = NSImage(systemSymbolName: "safari", accessibilityDescription: nil)
         openItem.image?.size = NSSize(width: 14, height: 14)
         submenu.addItem(openItem)
