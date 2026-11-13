@@ -9,56 +9,325 @@
 /* Begin PBXBuildFile section */
 		00BEF778E4F97D70D504F343 /* RefreshService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF36076631342404B904AA0 /* RefreshService.swift */; };
 		020A2A7AD7195CF5D7697E62 /* ContainerMenuRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E306F321988C9BDBA716CE6C /* ContainerMenuRowView.swift */; };
+		04414FEE9200D249052D36BE /* MonitoringDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF853EEE78078AE5AB0B273 /* MonitoringDesignSystem.swift */; };
+		053187873ECCA87E46B71BA9 /* ZFSPoolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38369F7CFEB53DEE2DDA6234 /* ZFSPoolsView.swift */; };
+		088748106A22B4E51F87E16C /* DetailedMemoryChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F9765850BDEB18A5CF7137 /* DetailedMemoryChartView.swift */; };
+		0CEE956C2D43C22009A50134 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 213F124CAE43331FD80645BD /* DashboardView.swift */; };
+		0DB6D70AB2377BAE28A0E247 /* DetailedNetworkChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AEA73F7EAD1265A1076F968 /* DetailedNetworkChartView.swift */; };
+		0E2F35A11F00B7F78129728F /* BandwidthSummaryChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7014A924F2A386FA33F17A6 /* BandwidthSummaryChartView.swift */; };
+		0E7A62A000B4FB42C5275F90 /* SystemCpuDetailChartViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26808B99D3014E3B2D6569E /* SystemCpuDetailChartViews.swift */; };
+		0FA5D177B5E94889ACE6CEF9 /* ContainerStatsRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C816997BCEEB29D9BB4464 /* ContainerStatsRecord.swift */; };
+		12E9EF77FA4D32D6CE7200CB /* HubConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC122EE17F33834AFF561E1 /* HubConnection.swift */; };
+		1328D6BF7FDA8EE9AC07A108 /* SystemNetworkInterfacesChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECE75CD742FA7452E8AEEAC /* SystemNetworkInterfacesChartView.swift */; };
 		165AEDF4EB29753333953503 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF458F85E166956B3632B47D /* SettingsView.swift */; };
+		18302D44918DB29C4528C454 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D9865CCB2AD6772C85D6A7 /* AppState.swift */; };
+		1AE84855554BF6D3ACC8B262 /* ChartTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90AA358F9655EFC23232D42 /* ChartTheme.swift */; };
 		1E13BD84CA99B1C01AAD9809 /* InfoMenuRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6DF28BB725FA84ABF889006 /* InfoMenuRowView.swift */; };
+		1EE6CE3E0999ED5702E17CBA /* SystemStatsRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6734426F77D67FDFC95F8234 /* SystemStatsRecord.swift */; };
+		2225C28E574A078BC5FB48D9 /* DevelopmentSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B229A7CE906B2D87DD73B427 /* DevelopmentSession.swift */; };
+		227372C17BE34373B8CE6384 /* KeychainServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0890BF29EAB108B3E1CDA2 /* KeychainServiceTests.swift */; };
+		22F40F4ED31F690081A64C0F /* MonitoringDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF853EEE78078AE5AB0B273 /* MonitoringDesignSystem.swift */; };
+		23C4414AA217EE508F321BD9 /* SystemAdditionalDisksIOChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C51F04A4D87CAD215203A43 /* SystemAdditionalDisksIOChartView.swift */; };
+		24D55667FA42F287A69211CE /* SystemDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA58D46F069C93C7F8891236 /* SystemDashboardView.swift */; };
+		25B0745D998A14E48E1CB48C /* DetailedExtraDiskIOView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC431407BFB143086971A825 /* DetailedExtraDiskIOView.swift */; };
+		264C2498232A6038C84E8912 /* SystemMetricChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750914B6D216502EB9AFB67D /* SystemMetricChartView.swift */; };
+		2751D4B7F758F3E61456FA9C /* ChartRenderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50AC54FE36A3DD69BAB3859E /* ChartRenderTests.swift */; };
+		2C736D96EFBF271D56B8271D /* SystemDiskIOChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600F2892E468CD0249A32FFD /* SystemDiskIOChartView.swift */; };
+		30FB992FDC6F1785D1603126 /* StackedMemoryChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160B4EF4D616155D25C85892 /* StackedMemoryChartView.swift */; };
+		311311896D387AB8A399E78C /* ExtraDiskIOSummaryChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE9D5EBEFD1F1D162389364 /* ExtraDiskIOSummaryChartView.swift */; };
+		344A697BDED71286D98D432D /* CardGroupBoxStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5CA88DCAF32D80E36D2635 /* CardGroupBoxStyle.swift */; };
+		3467C3AB0E08D1E640388AF9 /* HubSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D20E00E40E73AA7C100CA91 /* HubSnapshot.swift */; };
+		359054091B819F1EE7F1EE45 /* SystemCpuDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41CA9CF8BC7BDDE0627669F2 /* SystemCpuDetailView.swift */; };
+		36B90DED297B632F003D95EF /* DetailedCpuChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75EC6CC04B53A420F6DD8512 /* DetailedCpuChartView.swift */; };
+		380D8057D4B36EEA52FC3DD0 /* ChartDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589DBB6FA9E45DDDCC95B281 /* ChartDataSet.swift */; };
+		3A37DBC78E0C7D7D25C67A02 /* ChartCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3831C65C79B78DCDC27442 /* ChartCatalog.swift */; };
+		3AE45A7F90BADC7D531A55B5 /* HubConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC122EE17F33834AFF561E1 /* HubConnection.swift */; };
+		3DE0E114D535007F3D4A36AB /* ChartDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589DBB6FA9E45DDDCC95B281 /* ChartDataSet.swift */; };
 		3E53DE47A0C511620B19BE58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B92A2F65BC847F28E92213A1 /* Assets.xcassets */; };
+		3EDF51A89C972ACECF886082 /* SystemSwapChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38B6274587EC5C3F157F4F7 /* SystemSwapChartView.swift */; };
+		4138C5DAB7D68F7CA4480BD6 /* DetailedNetworkChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AEA73F7EAD1265A1076F968 /* DetailedNetworkChartView.swift */; };
+		464AEC1A59F080B44B9873FD /* IOSChartCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 737BF5EBB9EAF706FC910DDA /* IOSChartCard.swift */; };
+		47B8C8114F98DC9F4F24DEB3 /* DetailedDiskIOView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 104FAD6A691C5188526BFDCB /* DetailedDiskIOView.swift */; };
+		49FFBFA6433ECAA39632A19F /* ChartFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A3D1D4DCF4FDB1B81F0984 /* ChartFixtures.swift */; };
+		4ACEDFAC0521536FEFD40A6E /* SystemBandwidthDetailChartViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB6A1F0B9E2278DC080A679 /* SystemBandwidthDetailChartViews.swift */; };
+		4B3C42B30C908DE0151D5E04 /* DetailedCpuChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75EC6CC04B53A420F6DD8512 /* DetailedCpuChartView.swift */; };
+		4DA33B51534E6ACCFC41EBEF /* SystemSummaryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9EA5A900F66584388F5A3B5 /* SystemSummaryCard.swift */; };
+		4EC3B0B68C9D4ABC63442E98 /* StackedCpuChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC79DE378BD5F46779EA427B /* StackedCpuChartView.swift */; };
+		51BFB0D564C805713F53F0AF /* DetailedMemoryChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F9765850BDEB18A5CF7137 /* DetailedMemoryChartView.swift */; };
+		54EE4EECD70FC8E443017B73 /* BeszelAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FB1983B02FC00BAF135EA2 /* BeszelAPIService.swift */; };
+		55B592970E81B1E0B0A06566 /* DiskIOSummaryChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BEEA4C7095FE8B4050B31A3 /* DiskIOSummaryChartView.swift */; };
 		5644673A89BB724247D2FF40 /* SystemDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12063024AA456FC00EDFD5B1 /* SystemDetailView.swift */; };
+		59F0527E6DDBFF84DA176C95 /* HubSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D20E00E40E73AA7C100CA91 /* HubSnapshot.swift */; };
+		62C6FF6D57E4C10B5CE172FB /* DownsampleMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = C940604C6E3249C7F40DF4C3 /* DownsampleMethod.swift */; };
+		62E43B344A64CB3F67279E5F /* SensorChartData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296873BCA159215710046EDC /* SensorChartData.swift */; };
+		657745418B195F03B37F5EEC /* DetailedExtraDiskIOView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC431407BFB143086971A825 /* DetailedExtraDiskIOView.swift */; };
+		66132320553507F5EB24E0D5 /* ZFSPoolRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A75AF465F26B1876D337263 /* ZFSPoolRecord.swift */; };
+		669CE15B7F5D28487F32BCDB /* StackedChartData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99375D974965935DFB0500C /* StackedChartData.swift */; };
+		68F750E985FE9B26C39210BC /* ZFSPoolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38369F7CFEB53DEE2DDA6234 /* ZFSPoolsView.swift */; };
+		6AA2969ED346949EFD3FB216 /* SystemDiskUsageChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01ED90EE68034BB93ECE6ED9 /* SystemDiskUsageChartView.swift */; };
+		6B2583C6E13EE07620540AE2 /* DateFormatter+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDEEEFF3346DB11D69170DD6 /* DateFormatter+Extensions.swift */; };
+		6BA11964B29B9CFE967A8494 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9464DC3B398E06901D68550F /* Models.swift */; };
 		6C904759DA3567365D9D1A01 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9464DC3B398E06901D68550F /* Models.swift */; };
+		6D3F3DB99ABCF517C95AF8AF /* SystemCpuDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41CA9CF8BC7BDDE0627669F2 /* SystemCpuDetailView.swift */; };
+		75AB550E353ED7DDF658670D /* SystemGPUChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56728F1A5F0B585DC4997595 /* SystemGPUChartView.swift */; };
+		7626E2F290CA38ECD86F9B8E /* APITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 950CA47185A3CEE462BEE2D2 /* APITests.swift */; };
+		7697F524522F1F40FEC08E2F /* HistoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D43FBD575C42EBD72214EE9D /* HistoryTests.swift */; };
+		77B0735762EE78F247FEC5EE /* PinButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B58C576B2B3AC9AA7C53C3B /* PinButtonView.swift */; };
+		78044708FD58447218E3DBE1 /* ChartDataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD3DBE77A4AE94A5B081F56 /* ChartDataLoader.swift */; };
+		7AB8C2939C7CA5D55B2B47C7 /* SystemDiskIOChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600F2892E468CD0249A32FFD /* SystemDiskIOChartView.swift */; };
+		7DF4CB33A06F0B38530AAE83 /* SystemTemperatureChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F446F197FD3C736E830077C0 /* SystemTemperatureChartView.swift */; };
+		855BBC59A3272440055E6716 /* PinButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B58C576B2B3AC9AA7C53C3B /* PinButtonView.swift */; };
+		85C54625A14123C12A5EFBD1 /* StackedNetworkChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C1DFC4FBFBBCB17FF46311 /* StackedNetworkChartView.swift */; };
 		8A85D81AA6D64658D6D8D645 /* MenuHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D687528901B8719BA168809B /* MenuHeaderView.swift */; };
+		8AB218016BFBBFEBD7AA3C8E /* DetailedBandwidthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED5BDD6A2E09AB6CC21FF02 /* DetailedBandwidthView.swift */; };
+		8D08E2C6BD10F20F158D06BA /* SystemGPUChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56728F1A5F0B585DC4997595 /* SystemGPUChartView.swift */; };
 		8D66DE0702E9593562581913 /* BeszelBarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B86DF4974C41AAED385B17B /* BeszelBarApp.swift */; };
 		8E1E8F9CCC1383C3C406A35A /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D9865CCB2AD6772C85D6A7 /* AppState.swift */; };
 		8E94C9C4DDFA4ACAE37B963E /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D879D61A2031231B42699579 /* KeychainService.swift */; };
+		8E9FF3D40E702B001CB26788 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 2F0AB20EC0D8481FF0668B3B /* Localizable.xcstrings */; };
+		8F24D3AEC1C2871824435713 /* ContainerMetricChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30EBB27A9EF79C557714EF19 /* ContainerMetricChartView.swift */; };
+		92D737A912421C92ED95DF53 /* DetailedDiskIOView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 104FAD6A691C5188526BFDCB /* DetailedDiskIOView.swift */; };
+		94326EC831BAD6EC9340336B /* GPUChartData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B297B1B66B54F3673983E04 /* GPUChartData.swift */; };
+		970F71BA8276FCF25CB129AC /* DownsampleMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = C940604C6E3249C7F40DF4C3 /* DownsampleMethod.swift */; };
+		9738933B6958ECE2226528AB /* SystemDiskIOStatsChartViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C51E6E158D8AC7E3CB420B /* SystemDiskIOStatsChartViews.swift */; };
+		9740E5BFCED265E17557E9D3 /* SystemBandwidthChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39CFB12EF9573110F23C33F /* SystemBandwidthChartView.swift */; };
+		9ADD20B155966F4B8066F681 /* SystemBandwidthChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39CFB12EF9573110F23C33F /* SystemBandwidthChartView.swift */; };
+		9C81AF405A7FFC79E181E5D8 /* SystemAdditionalDisksIOChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C51F04A4D87CAD215203A43 /* SystemAdditionalDisksIOChartView.swift */; };
+		9C99FE02D63A98F241D283E2 /* SystemCpuDetailChartViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26808B99D3014E3B2D6569E /* SystemCpuDetailChartViews.swift */; };
+		9CCD41122C59FE036555FCE9 /* ExtraDiskIOStatsChartViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0D1A4E244FB59F67AF8254 /* ExtraDiskIOStatsChartViews.swift */; };
 		9E4ECCBB9810EBA0DF4B44B0 /* SystemMenuRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116405B6F003D36438DB3AD3 /* SystemMenuRowView.swift */; };
+		A046278B894253B938482B28 /* BandwidthSummaryChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7014A924F2A386FA33F17A6 /* BandwidthSummaryChartView.swift */; };
+		A4D02C3DD1FCECF2ED9E64C6 /* ChartDataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD3DBE77A4AE94A5B081F56 /* ChartDataLoader.swift */; };
+		A549D09433E3BA5B20589F00 /* StackedMemoryChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160B4EF4D616155D25C85892 /* StackedMemoryChartView.swift */; };
+		A61AFED223CFB084C2AFC129 /* PinnedItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F9341369DF5D710EB488C1F /* PinnedItem.swift */; };
 		A8025428FBC26C5EDA34E16D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CFE03FCE8ECFA83CEA4773 /* AppDelegate.swift */; };
+		AADA319FE0E427E9B8DDE177 /* CardGroupBoxStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5CA88DCAF32D80E36D2635 /* CardGroupBoxStyle.swift */; };
+		AAF8A7326DD9282CDABF5021 /* SystemCpuSummaryChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF98E0D05B0891A04C21E1F /* SystemCpuSummaryChartView.swift */; };
+		AB3B7F5FB2BE7E68E44ADBE4 /* SystemDiskIOStatsChartViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C51E6E158D8AC7E3CB420B /* SystemDiskIOStatsChartViews.swift */; };
+		ABF30D7720D6AFD22CE02F5A /* DiskIOSummaryChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BEEA4C7095FE8B4050B31A3 /* DiskIOSummaryChartView.swift */; };
+		ACAC0B863C634619CCAE8EC1 /* HistorySeries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC182658B886A73EB29FBD4 /* HistorySeries.swift */; };
+		ACBFEFCFE2CCC9FADDFACA5D /* SystemCpuSummaryChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF98E0D05B0891A04C21E1F /* SystemCpuSummaryChartView.swift */; };
+		AF8FD98E25D74E8C3A3634C1 /* ActivityDashboardViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB94251446BAE75AD972524 /* ActivityDashboardViews.swift */; };
 		B0C0312A6D672B48C138F70B /* BeszelAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FB1983B02FC00BAF135EA2 /* BeszelAPIService.swift */; };
+		B191E71B42E2163271C9DE45 /* DateFormatter+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDEEEFF3346DB11D69170DD6 /* DateFormatter+Extensions.swift */; };
+		B20663FD7955BC80ADB16E4C /* SystemSummaryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9EA5A900F66584388F5A3B5 /* SystemSummaryCard.swift */; };
+		B24F25F2CCED18F1874B633E /* SystemLoadChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DCA020B4BE78C1A2A9226F /* SystemLoadChartView.swift */; };
+		B59F33BA386284283C9CB591 /* ChartPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 405D879398FE0EF990997A0A /* ChartPreferences.swift */; };
+		B641E3B3D8E459816F69A194 /* StackedChartData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99375D974965935DFB0500C /* StackedChartData.swift */; };
+		B77860D1FE3F61DC66FA819A /* ChartParityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02AF1D0303C8AAB0873F5D6E /* ChartParityTests.swift */; };
+		BD0D100F24D2307B9F88B0B4 /* IOSChartCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 737BF5EBB9EAF706FC910DDA /* IOSChartCard.swift */; };
+		BD692DA9C61D393DB4315DBA /* ChartTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90AA358F9655EFC23232D42 /* ChartTheme.swift */; };
+		BE632D6C1515E38B471EA118 /* SystemStatsRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6734426F77D67FDFC95F8234 /* SystemStatsRecord.swift */; };
+		C020CC36101B22C2DB169D8E /* SystemMetricChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750914B6D216502EB9AFB67D /* SystemMetricChartView.swift */; };
+		C0A89168366B401E3EA4AEE2 /* GPUChartData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B297B1B66B54F3673983E04 /* GPUChartData.swift */; };
+		C0DD63D5E2AD712D89DD9742 /* SystemLoadChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DCA020B4BE78C1A2A9226F /* SystemLoadChartView.swift */; };
+		C305DA00E1856ADC33621AD6 /* ContainerStatsRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C816997BCEEB29D9BB4464 /* ContainerStatsRecord.swift */; };
+		C76A24A97ED5CBFF1109DC06 /* HistorySeries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC182658B886A73EB29FBD4 /* HistorySeries.swift */; };
+		C8AEE18B4DB63A0DA4E0D4BB /* DetailedBandwidthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED5BDD6A2E09AB6CC21FF02 /* DetailedBandwidthView.swift */; };
 		CB822A6B39464AC684C2ACE1 /* AlertMenuRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31F62CBEF5816707CC42613 /* AlertMenuRowView.swift */; };
+		CCBB6B28C324EBEE30F2ECE1 /* SensorHistoryChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AD32BBBD4FB2F4D2F8D6D2 /* SensorHistoryChart.swift */; };
+		CFE378469FA299386035AFA3 /* SingleCPUCoreChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AEAD18DA16E3CBD6C50592F /* SingleCPUCoreChart.swift */; };
 		D34309692A8DBF8CDB89A18B /* MenuActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBAF76E6EBF34C669CB5396 /* MenuActions.swift */; };
+		D5E24E03235A4F08998A7D46 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D879D61A2031231B42699579 /* KeychainService.swift */; };
+		D8394B7141782E541C573C8B /* StackedNetworkChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C1DFC4FBFBBCB17FF46311 /* StackedNetworkChartView.swift */; };
+		DA79CC428BCE97C91CF32600 /* ChartPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 405D879398FE0EF990997A0A /* ChartPreferences.swift */; };
+		DB6AA6C8F8460DA9F9062372 /* SensorHistoryChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AD32BBBD4FB2F4D2F8D6D2 /* SensorHistoryChart.swift */; };
+		DC806106EDDFC55B3C6EB433 /* SystemTemperatureChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F446F197FD3C736E830077C0 /* SystemTemperatureChartView.swift */; };
+		DF30EA1B09FE7F695EA8567D /* SystemDataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F9586459A4B49C89216486 /* SystemDataPoint.swift */; };
+		DF92C0EE2FB68222FCCA6A81 /* ZFSPoolRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A75AF465F26B1876D337263 /* ZFSPoolRecord.swift */; };
+		E062B1DB6E36EBB038EEF5CC /* SystemSwapChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38B6274587EC5C3F157F4F7 /* SystemSwapChartView.swift */; };
+		E1C9F8D460F0C17F2ECC780F /* SensorChartData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296873BCA159215710046EDC /* SensorChartData.swift */; };
+		E2AE8383DAC8E1E82BA25B37 /* SingleCPUCoreChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AEAD18DA16E3CBD6C50592F /* SingleCPUCoreChart.swift */; };
+		E3A92D7EF96FA547724DF13D /* AppStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B94DA3A3C743B59FE08F54 /* AppStateTests.swift */; };
+		E3E1A6FE53AD76DDA0524D25 /* SystemNetworkInterfacesChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECE75CD742FA7452E8AEEAC /* SystemNetworkInterfacesChartView.swift */; };
+		E49397110257A066A805F3FA /* SystemDataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F9586459A4B49C89216486 /* SystemDataPoint.swift */; };
+		E4AF6E851FAD097C1EADF97F /* StorageHistoryChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B014C1A76AE4BEB07C64223 /* StorageHistoryChart.swift */; };
+		E6D3D49C88124F07C6C701F6 /* ExtraDiskIOStatsChartViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0D1A4E244FB59F67AF8254 /* ExtraDiskIOStatsChartViews.swift */; };
+		E70690FD75923BA7823EF048 /* SystemBandwidthDetailChartViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB6A1F0B9E2278DC080A679 /* SystemBandwidthDetailChartViews.swift */; };
+		E7F0D7735A3B062F1EA9C199 /* ContainerMetricChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30EBB27A9EF79C557714EF19 /* ContainerMetricChartView.swift */; };
+		E9C3D35AD9EAC403704A20A6 /* ChartCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3831C65C79B78DCDC27442 /* ChartCatalog.swift */; };
+		EAA353F6F38FA78933EF4243 /* HubConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DBDD86F824A5EADC70729D /* HubConnectionTests.swift */; };
+		EBC7E7BF55AB9C7BFB070DFD /* StackedCpuChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC79DE378BD5F46779EA427B /* StackedCpuChartView.swift */; };
+		EC2C2A3EE8BC7960B2170E3A /* MonitoringStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DC9C9BC54302800CF284234 /* MonitoringStyle.swift */; };
+		EC3837EFA1D752703F3CD1D2 /* ExtraDiskIOSummaryChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE9D5EBEFD1F1D162389364 /* ExtraDiskIOSummaryChartView.swift */; };
+		EC9E5483E24316653480FB36 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 2F0AB20EC0D8481FF0668B3B /* Localizable.xcstrings */; };
 		EE3535E8F86A11221CA1C31B /* MenuBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB4A3B7EE637F0B0B23115D /* MenuBuilder.swift */; };
+		F465D6F9DA873FCC1F5AF6A9 /* StorageHistoryChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B014C1A76AE4BEB07C64223 /* StorageHistoryChart.swift */; };
+		F4E0B88108747FDEBD5242EE /* DevelopmentSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B229A7CE906B2D87DD73B427 /* DevelopmentSession.swift */; };
+		FB41D15D091A34135A7D8EF8 /* SystemDiskUsageChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01ED90EE68034BB93ECE6ED9 /* SystemDiskUsageChartView.swift */; };
+		FB7ECF98F9D2F3530AE64DD0 /* PinnedItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F9341369DF5D710EB488C1F /* PinnedItem.swift */; };
+		FC70F15F03456C6C9713CB43 /* StatPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CEC03E609C22809EB0BBEF /* StatPoint.swift */; };
+		FF2E842F48D21E9D9CF2CBE3 /* StatPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CEC03E609C22809EB0BBEF /* StatPoint.swift */; };
 		FF577F1D0BB38BE9CBC139A9 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3B670E34223ABF8880B1B9A /* WindowManager.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		575554811317696A7D70A768 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6E63638D214666D3D03D99BE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 811F73FA409AA76DCB0DE0B4;
+			remoteInfo = BeszelBar;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		01ED90EE68034BB93ECE6ED9 /* SystemDiskUsageChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemDiskUsageChartView.swift; sourceTree = "<group>"; };
+		02AF1D0303C8AAB0873F5D6E /* ChartParityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartParityTests.swift; sourceTree = "<group>"; };
+		02DBDD86F824A5EADC70729D /* HubConnectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HubConnectionTests.swift; sourceTree = "<group>"; };
+		0B297B1B66B54F3673983E04 /* GPUChartData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUChartData.swift; sourceTree = "<group>"; };
+		104FAD6A691C5188526BFDCB /* DetailedDiskIOView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedDiskIOView.swift; sourceTree = "<group>"; };
 		116405B6F003D36438DB3AD3 /* SystemMenuRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemMenuRowView.swift; sourceTree = "<group>"; };
 		12063024AA456FC00EDFD5B1 /* SystemDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemDetailView.swift; sourceTree = "<group>"; };
+		160B4EF4D616155D25C85892 /* StackedMemoryChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackedMemoryChartView.swift; sourceTree = "<group>"; };
+		18C51E6E158D8AC7E3CB420B /* SystemDiskIOStatsChartViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemDiskIOStatsChartViews.swift; sourceTree = "<group>"; };
+		1A5CA88DCAF32D80E36D2635 /* CardGroupBoxStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardGroupBoxStyle.swift; sourceTree = "<group>"; };
+		1B58C576B2B3AC9AA7C53C3B /* PinButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinButtonView.swift; sourceTree = "<group>"; };
+		1CC182658B886A73EB29FBD4 /* HistorySeries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistorySeries.swift; sourceTree = "<group>"; };
+		20C816997BCEEB29D9BB4464 /* ContainerStatsRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerStatsRecord.swift; sourceTree = "<group>"; };
+		213F124CAE43331FD80645BD /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		296873BCA159215710046EDC /* SensorChartData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorChartData.swift; sourceTree = "<group>"; };
+		2AEA73F7EAD1265A1076F968 /* DetailedNetworkChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedNetworkChartView.swift; sourceTree = "<group>"; };
+		2BEEA4C7095FE8B4050B31A3 /* DiskIOSummaryChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskIOSummaryChartView.swift; sourceTree = "<group>"; };
+		2EC122EE17F33834AFF561E1 /* HubConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HubConnection.swift; sourceTree = "<group>"; };
+		2EFA057D2D7F9B3D84707607 /* BeszelBarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeszelBarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F0AB20EC0D8481FF0668B3B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		2F9341369DF5D710EB488C1F /* PinnedItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedItem.swift; sourceTree = "<group>"; };
+		30EBB27A9EF79C557714EF19 /* ContainerMetricChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerMetricChartView.swift; sourceTree = "<group>"; };
+		38369F7CFEB53DEE2DDA6234 /* ZFSPoolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZFSPoolsView.swift; sourceTree = "<group>"; };
+		3A75AF465F26B1876D337263 /* ZFSPoolRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZFSPoolRecord.swift; sourceTree = "<group>"; };
 		3B86DF4974C41AAED385B17B /* BeszelBarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeszelBarApp.swift; sourceTree = "<group>"; };
+		3BB94251446BAE75AD972524 /* ActivityDashboardViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityDashboardViews.swift; sourceTree = "<group>"; };
+		3FB6A1F0B9E2278DC080A679 /* SystemBandwidthDetailChartViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemBandwidthDetailChartViews.swift; sourceTree = "<group>"; };
+		405D879398FE0EF990997A0A /* ChartPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartPreferences.swift; sourceTree = "<group>"; };
+		40C1DFC4FBFBBCB17FF46311 /* StackedNetworkChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackedNetworkChartView.swift; sourceTree = "<group>"; };
+		41CA9CF8BC7BDDE0627669F2 /* SystemCpuDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemCpuDetailView.swift; sourceTree = "<group>"; };
+		49F9765850BDEB18A5CF7137 /* DetailedMemoryChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedMemoryChartView.swift; sourceTree = "<group>"; };
+		4AEAD18DA16E3CBD6C50592F /* SingleCPUCoreChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleCPUCoreChart.swift; sourceTree = "<group>"; };
 		4EF36076631342404B904AA0 /* RefreshService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshService.swift; sourceTree = "<group>"; };
 		507A5A8B512FA65A4233F8BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		50AC54FE36A3DD69BAB3859E /* ChartRenderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartRenderTests.swift; sourceTree = "<group>"; };
+		56728F1A5F0B585DC4997595 /* SystemGPUChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemGPUChartView.swift; sourceTree = "<group>"; };
+		57A3D1D4DCF4FDB1B81F0984 /* ChartFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartFixtures.swift; sourceTree = "<group>"; };
+		589DBB6FA9E45DDDCC95B281 /* ChartDataSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartDataSet.swift; sourceTree = "<group>"; };
+		5DC9C9BC54302800CF284234 /* MonitoringStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitoringStyle.swift; sourceTree = "<group>"; };
 		5EBAF76E6EBF34C669CB5396 /* MenuActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuActions.swift; sourceTree = "<group>"; };
+		5ECE75CD742FA7452E8AEEAC /* SystemNetworkInterfacesChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemNetworkInterfacesChartView.swift; sourceTree = "<group>"; };
+		600F2892E468CD0249A32FFD /* SystemDiskIOChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemDiskIOChartView.swift; sourceTree = "<group>"; };
+		6734426F77D67FDFC95F8234 /* SystemStatsRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStatsRecord.swift; sourceTree = "<group>"; };
+		6C51F04A4D87CAD215203A43 /* SystemAdditionalDisksIOChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemAdditionalDisksIOChartView.swift; sourceTree = "<group>"; };
+		6DE9D5EBEFD1F1D162389364 /* ExtraDiskIOSummaryChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtraDiskIOSummaryChartView.swift; sourceTree = "<group>"; };
+		737BF5EBB9EAF706FC910DDA /* IOSChartCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSChartCard.swift; sourceTree = "<group>"; };
+		750914B6D216502EB9AFB67D /* SystemMetricChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemMetricChartView.swift; sourceTree = "<group>"; };
+		75EC6CC04B53A420F6DD8512 /* DetailedCpuChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedCpuChartView.swift; sourceTree = "<group>"; };
+		77B94DA3A3C743B59FE08F54 /* AppStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateTests.swift; sourceTree = "<group>"; };
+		7D20E00E40E73AA7C100CA91 /* HubSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HubSnapshot.swift; sourceTree = "<group>"; };
+		83F9586459A4B49C89216486 /* SystemDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemDataPoint.swift; sourceTree = "<group>"; };
 		9464DC3B398E06901D68550F /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		950CA47185A3CEE462BEE2D2 /* APITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APITests.swift; sourceTree = "<group>"; };
+		9B014C1A76AE4BEB07C64223 /* StorageHistoryChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageHistoryChart.swift; sourceTree = "<group>"; };
 		9E4B217DF23619BABB944FC6 /* BeszelBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BeszelBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9ED5BDD6A2E09AB6CC21FF02 /* DetailedBandwidthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedBandwidthView.swift; sourceTree = "<group>"; };
 		A31F62CBEF5816707CC42613 /* AlertMenuRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertMenuRowView.swift; sourceTree = "<group>"; };
 		A3B670E34223ABF8880B1B9A /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		AF458F85E166956B3632B47D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B229A7CE906B2D87DD73B427 /* DevelopmentSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevelopmentSession.swift; sourceTree = "<group>"; };
+		B39CFB12EF9573110F23C33F /* SystemBandwidthChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemBandwidthChartView.swift; sourceTree = "<group>"; };
 		B6D9865CCB2AD6772C85D6A7 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		B92A2F65BC847F28E92213A1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B99375D974965935DFB0500C /* StackedChartData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackedChartData.swift; sourceTree = "<group>"; };
+		BC79DE378BD5F46779EA427B /* StackedCpuChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackedCpuChartView.swift; sourceTree = "<group>"; };
+		C7DCA020B4BE78C1A2A9226F /* SystemLoadChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemLoadChartView.swift; sourceTree = "<group>"; };
+		C940604C6E3249C7F40DF4C3 /* DownsampleMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownsampleMethod.swift; sourceTree = "<group>"; };
+		C9EA5A900F66584388F5A3B5 /* SystemSummaryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSummaryCard.swift; sourceTree = "<group>"; };
+		CAF98E0D05B0891A04C21E1F /* SystemCpuSummaryChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemCpuSummaryChartView.swift; sourceTree = "<group>"; };
+		CF3831C65C79B78DCDC27442 /* ChartCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartCatalog.swift; sourceTree = "<group>"; };
+		D26808B99D3014E3B2D6569E /* SystemCpuDetailChartViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemCpuDetailChartViews.swift; sourceTree = "<group>"; };
+		D43FBD575C42EBD72214EE9D /* HistoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryTests.swift; sourceTree = "<group>"; };
 		D687528901B8719BA168809B /* MenuHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuHeaderView.swift; sourceTree = "<group>"; };
 		D879D61A2031231B42699579 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
 		D8FB1983B02FC00BAF135EA2 /* BeszelAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeszelAPIService.swift; sourceTree = "<group>"; };
+		DA0890BF29EAB108B3E1CDA2 /* KeychainServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainServiceTests.swift; sourceTree = "<group>"; };
+		DC431407BFB143086971A825 /* DetailedExtraDiskIOView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedExtraDiskIOView.swift; sourceTree = "<group>"; };
 		E306F321988C9BDBA716CE6C /* ContainerMenuRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerMenuRowView.swift; sourceTree = "<group>"; };
+		E7014A924F2A386FA33F17A6 /* BandwidthSummaryChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandwidthSummaryChartView.swift; sourceTree = "<group>"; };
+		E90AA358F9655EFC23232D42 /* ChartTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartTheme.swift; sourceTree = "<group>"; };
 		EA91B07E6440309524DB0AEF /* BeszelBar.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BeszelBar.entitlements; sourceTree = "<group>"; };
+		EF0D1A4E244FB59F67AF8254 /* ExtraDiskIOStatsChartViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtraDiskIOStatsChartViews.swift; sourceTree = "<group>"; };
 		EFB4A3B7EE637F0B0B23115D /* MenuBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBuilder.swift; sourceTree = "<group>"; };
+		EFD3DBE77A4AE94A5B081F56 /* ChartDataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartDataLoader.swift; sourceTree = "<group>"; };
+		F0AD32BBBD4FB2F4D2F8D6D2 /* SensorHistoryChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorHistoryChart.swift; sourceTree = "<group>"; };
+		F38B6274587EC5C3F157F4F7 /* SystemSwapChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSwapChartView.swift; sourceTree = "<group>"; };
+		F446F197FD3C736E830077C0 /* SystemTemperatureChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemTemperatureChartView.swift; sourceTree = "<group>"; };
 		F6CFE03FCE8ECFA83CEA4773 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F6DF28BB725FA84ABF889006 /* InfoMenuRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoMenuRowView.swift; sourceTree = "<group>"; };
+		F9CEC03E609C22809EB0BBEF /* StatPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatPoint.swift; sourceTree = "<group>"; };
+		FA58D46F069C93C7F8891236 /* SystemDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemDashboardView.swift; sourceTree = "<group>"; };
+		FDEEEFF3346DB11D69170DD6 /* DateFormatter+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateFormatter+Extensions.swift"; sourceTree = "<group>"; };
+		FFF853EEE78078AE5AB0B273 /* MonitoringDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitoringDesignSystem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		0F4BBBE1BE06D18393009C67 /* Charts */ = {
+			isa = PBXGroup;
+			children = (
+				9BAD109D5E887C6DAF1554CD /* Metrics */,
+				6B4EA7DF25270718AC5C2793 /* Stacked */,
+				2019E4DC3221D2CBBDF92DF9 /* Theme */,
+			);
+			path = Charts;
+			sourceTree = "<group>";
+		};
+		2019E4DC3221D2CBBDF92DF9 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				E90AA358F9655EFC23232D42 /* ChartTheme.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		2DFED9D8BA314BE4F868734D /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				1A5CA88DCAF32D80E36D2635 /* CardGroupBoxStyle.swift */,
+				1B58C576B2B3AC9AA7C53C3B /* PinButtonView.swift */,
+				C9EA5A900F66584388F5A3B5 /* SystemSummaryCard.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		354539FD961DE6C6376A08EB /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				3BB94251446BAE75AD972524 /* ActivityDashboardViews.swift */,
+				405D879398FE0EF990997A0A /* ChartPreferences.swift */,
+				213F124CAE43331FD80645BD /* DashboardView.swift */,
+				737BF5EBB9EAF706FC910DDA /* IOSChartCard.swift */,
+				5DC9C9BC54302800CF284234 /* MonitoringStyle.swift */,
+				4AEAD18DA16E3CBD6C50592F /* SingleCPUCoreChart.swift */,
+				FA58D46F069C93C7F8891236 /* SystemDashboardView.swift */,
+				8253F52403416BD1A89519AC /* iOS */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
 		35A5B4B5C5FA161634C663B7 = {
 			isa = PBXGroup;
 			children = (
 				E6485B53692726867806C44C /* Resources */,
 				6FE03FD98ED73F182224A3DA /* Sources */,
+				6C5902106A0DB4FA5A67379A /* Tests */,
 				E84B2C2B4FEC837956144720 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		3C2B8DAAD2116EB0A6710879 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				86E16214CF4C06853E1467B0 /* Common */,
+				E2143022E6B0108C75230508 /* Screens */,
+			);
+			path = UI;
 			sourceTree = "<group>";
 		};
 		4E0C85877B5A70640CB279EF /* Views */ = {
@@ -89,6 +358,7 @@
 			isa = PBXGroup;
 			children = (
 				D8FB1983B02FC00BAF135EA2 /* BeszelAPIService.swift */,
+				2EC122EE17F33834AFF561E1 /* HubConnection.swift */,
 				D879D61A2031231B42699579 /* KeychainService.swift */,
 				4EF36076631342404B904AA0 /* RefreshService.swift */,
 			);
@@ -101,15 +371,61 @@
 				F6CFE03FCE8ECFA83CEA4773 /* AppDelegate.swift */,
 				B6D9865CCB2AD6772C85D6A7 /* AppState.swift */,
 				3B86DF4974C41AAED385B17B /* BeszelBarApp.swift */,
+				B229A7CE906B2D87DD73B427 /* DevelopmentSession.swift */,
 				AF458F85E166956B3632B47D /* SettingsView.swift */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		670E6A6CCB531DAA2412A4D7 /* Details */ = {
+			isa = PBXGroup;
+			children = (
+				9ED5BDD6A2E09AB6CC21FF02 /* DetailedBandwidthView.swift */,
+				75EC6CC04B53A420F6DD8512 /* DetailedCpuChartView.swift */,
+				104FAD6A691C5188526BFDCB /* DetailedDiskIOView.swift */,
+				DC431407BFB143086971A825 /* DetailedExtraDiskIOView.swift */,
+				49F9765850BDEB18A5CF7137 /* DetailedMemoryChartView.swift */,
+				2AEA73F7EAD1265A1076F968 /* DetailedNetworkChartView.swift */,
+				41CA9CF8BC7BDDE0627669F2 /* SystemCpuDetailView.swift */,
+			);
+			path = Details;
+			sourceTree = "<group>";
+		};
+		6B4EA7DF25270718AC5C2793 /* Stacked */ = {
+			isa = PBXGroup;
+			children = (
+				E7014A924F2A386FA33F17A6 /* BandwidthSummaryChartView.swift */,
+				2BEEA4C7095FE8B4050B31A3 /* DiskIOSummaryChartView.swift */,
+				6DE9D5EBEFD1F1D162389364 /* ExtraDiskIOSummaryChartView.swift */,
+				BC79DE378BD5F46779EA427B /* StackedCpuChartView.swift */,
+				160B4EF4D616155D25C85892 /* StackedMemoryChartView.swift */,
+				40C1DFC4FBFBBCB17FF46311 /* StackedNetworkChartView.swift */,
+				CAF98E0D05B0891A04C21E1F /* SystemCpuSummaryChartView.swift */,
+				670E6A6CCB531DAA2412A4D7 /* Details */,
+			);
+			path = Stacked;
+			sourceTree = "<group>";
+		};
+		6C5902106A0DB4FA5A67379A /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				950CA47185A3CEE462BEE2D2 /* APITests.swift */,
+				77B94DA3A3C743B59FE08F54 /* AppStateTests.swift */,
+				57A3D1D4DCF4FDB1B81F0984 /* ChartFixtures.swift */,
+				02AF1D0303C8AAB0873F5D6E /* ChartParityTests.swift */,
+				50AC54FE36A3DD69BAB3859E /* ChartRenderTests.swift */,
+				D43FBD575C42EBD72214EE9D /* HistoryTests.swift */,
+				02DBDD86F824A5EADC70729D /* HubConnectionTests.swift */,
+				DA0890BF29EAB108B3E1CDA2 /* KeychainServiceTests.swift */,
+			);
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		6FE03FD98ED73F182224A3DA /* Sources */ = {
 			isa = PBXGroup;
 			children = (
 				5B6E180C2C456706351F228E /* App */,
+				354539FD961DE6C6376A08EB /* Dashboard */,
 				55CBB58A603CF58659555051 /* Menu */,
 				AEA5FA2F41107EEE4D1672AA /* Models */,
 				56318B08BB787E406886F452 /* Services */,
@@ -117,12 +433,110 @@
 			path = Sources;
 			sourceTree = "<group>";
 		};
+		8253F52403416BD1A89519AC /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				FFF853EEE78078AE5AB0B273 /* MonitoringDesignSystem.swift */,
+				A1833CB3E29E23AA6F725887 /* Configuration */,
+				3C2B8DAAD2116EB0A6710879 /* UI */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
+		86E16214CF4C06853E1467B0 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				0F4BBBE1BE06D18393009C67 /* Charts */,
+				2DFED9D8BA314BE4F868734D /* Components */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		94F746ED1413726C4C9DC798 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		9BAD109D5E887C6DAF1554CD /* Metrics */ = {
+			isa = PBXGroup;
+			children = (
+				30EBB27A9EF79C557714EF19 /* ContainerMetricChartView.swift */,
+				EF0D1A4E244FB59F67AF8254 /* ExtraDiskIOStatsChartViews.swift */,
+				F0AD32BBBD4FB2F4D2F8D6D2 /* SensorHistoryChart.swift */,
+				9B014C1A76AE4BEB07C64223 /* StorageHistoryChart.swift */,
+				6C51F04A4D87CAD215203A43 /* SystemAdditionalDisksIOChartView.swift */,
+				B39CFB12EF9573110F23C33F /* SystemBandwidthChartView.swift */,
+				3FB6A1F0B9E2278DC080A679 /* SystemBandwidthDetailChartViews.swift */,
+				D26808B99D3014E3B2D6569E /* SystemCpuDetailChartViews.swift */,
+				600F2892E468CD0249A32FFD /* SystemDiskIOChartView.swift */,
+				18C51E6E158D8AC7E3CB420B /* SystemDiskIOStatsChartViews.swift */,
+				01ED90EE68034BB93ECE6ED9 /* SystemDiskUsageChartView.swift */,
+				56728F1A5F0B585DC4997595 /* SystemGPUChartView.swift */,
+				C7DCA020B4BE78C1A2A9226F /* SystemLoadChartView.swift */,
+				750914B6D216502EB9AFB67D /* SystemMetricChartView.swift */,
+				5ECE75CD742FA7452E8AEEAC /* SystemNetworkInterfacesChartView.swift */,
+				F38B6274587EC5C3F157F4F7 /* SystemSwapChartView.swift */,
+				F446F197FD3C736E830077C0 /* SystemTemperatureChartView.swift */,
+			);
+			path = Metrics;
+			sourceTree = "<group>";
+		};
+		A1833CB3E29E23AA6F725887 /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				94F746ED1413726C4C9DC798 /* Extensions */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
+		A8EF83D0749E8563B6F5045A /* System */ = {
+			isa = PBXGroup;
+			children = (
+				38369F7CFEB53DEE2DDA6234 /* ZFSPoolsView.swift */,
+			);
+			path = System;
+			sourceTree = "<group>";
+		};
 		AEA5FA2F41107EEE4D1672AA /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				CF3831C65C79B78DCDC27442 /* ChartCatalog.swift */,
+				EFD3DBE77A4AE94A5B081F56 /* ChartDataLoader.swift */,
+				589DBB6FA9E45DDDCC95B281 /* ChartDataSet.swift */,
+				1CC182658B886A73EB29FBD4 /* HistorySeries.swift */,
+				7D20E00E40E73AA7C100CA91 /* HubSnapshot.swift */,
 				9464DC3B398E06901D68550F /* Models.swift */,
+				CA49F4C8D272E0AD46F079D3 /* iOS */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		CA49F4C8D272E0AD46F079D3 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				20C816997BCEEB29D9BB4464 /* ContainerStatsRecord.swift */,
+				FDEEEFF3346DB11D69170DD6 /* DateFormatter+Extensions.swift */,
+				C940604C6E3249C7F40DF4C3 /* DownsampleMethod.swift */,
+				0B297B1B66B54F3673983E04 /* GPUChartData.swift */,
+				2F9341369DF5D710EB488C1F /* PinnedItem.swift */,
+				296873BCA159215710046EDC /* SensorChartData.swift */,
+				B99375D974965935DFB0500C /* StackedChartData.swift */,
+				F9CEC03E609C22809EB0BBEF /* StatPoint.swift */,
+				83F9586459A4B49C89216486 /* SystemDataPoint.swift */,
+				6734426F77D67FDFC95F8234 /* SystemStatsRecord.swift */,
+				3A75AF465F26B1876D337263 /* ZFSPoolRecord.swift */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
+		E2143022E6B0108C75230508 /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				A8EF83D0749E8563B6F5045A /* System */,
+			);
+			path = Screens;
 			sourceTree = "<group>";
 		};
 		E6485B53692726867806C44C /* Resources */ = {
@@ -131,6 +545,7 @@
 				B92A2F65BC847F28E92213A1 /* Assets.xcassets */,
 				EA91B07E6440309524DB0AEF /* BeszelBar.entitlements */,
 				507A5A8B512FA65A4233F8BC /* Info.plist */,
+				2F0AB20EC0D8481FF0668B3B /* Localizable.xcstrings */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -139,6 +554,7 @@
 			isa = PBXGroup;
 			children = (
 				9E4B217DF23619BABB944FC6 /* BeszelBar.app */,
+				2EFA057D2D7F9B3D84707607 /* BeszelBarTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -146,6 +562,25 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		5AFC6245C9B0265979A0D158 /* BeszelBarTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3C56B99767460296F4E7465B /* Build configuration list for PBXNativeTarget "BeszelBarTests" */;
+			buildPhases = (
+				0CCDA8F0AEAECF5381EDE40A /* Sources */,
+				E7F94917B9884368CB7DD872 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1504B8FD0BB250259DEDE7A6 /* PBXTargetDependency */,
+			);
+			name = BeszelBarTests;
+			packageProductDependencies = (
+			);
+			productName = BeszelBarTests;
+			productReference = 2EFA057D2D7F9B3D84707607 /* BeszelBarTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		811F73FA409AA76DCB0DE0B4 /* BeszelBar */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8D2DDC3BB848DAA78FCB5D9E /* Build configuration list for PBXNativeTarget "BeszelBar" */;
@@ -173,6 +608,9 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
+					5AFC6245C9B0265979A0D158 = {
+						ProvisioningStyle = Automatic;
+					};
 					811F73FA409AA76DCB0DE0B4 = {
 						ProvisioningStyle = Automatic;
 					};
@@ -184,6 +622,7 @@
 			knownRegions = (
 				Base,
 				en,
+				fr,
 			);
 			mainGroup = 35A5B4B5C5FA161634C663B7;
 			minimizedProjectReferenceProxies = 1;
@@ -193,6 +632,7 @@
 			projectRoot = "";
 			targets = (
 				811F73FA409AA76DCB0DE0B4 /* BeszelBar */,
+				5AFC6245C9B0265979A0D158 /* BeszelBarTests */,
 			);
 		};
 /* End PBXProject section */
@@ -203,39 +643,229 @@
 			buildActionMask = 2147483647;
 			files = (
 				3E53DE47A0C511620B19BE58 /* Assets.xcassets in Resources */,
+				8E9FF3D40E702B001CB26788 /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E7F94917B9884368CB7DD872 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EC9E5483E24316653480FB36 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0CCDA8F0AEAECF5381EDE40A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7626E2F290CA38ECD86F9B8E /* APITests.swift in Sources */,
+				18302D44918DB29C4528C454 /* AppState.swift in Sources */,
+				E3A92D7EF96FA547724DF13D /* AppStateTests.swift in Sources */,
+				A046278B894253B938482B28 /* BandwidthSummaryChartView.swift in Sources */,
+				54EE4EECD70FC8E443017B73 /* BeszelAPIService.swift in Sources */,
+				344A697BDED71286D98D432D /* CardGroupBoxStyle.swift in Sources */,
+				3A37DBC78E0C7D7D25C67A02 /* ChartCatalog.swift in Sources */,
+				78044708FD58447218E3DBE1 /* ChartDataLoader.swift in Sources */,
+				380D8057D4B36EEA52FC3DD0 /* ChartDataSet.swift in Sources */,
+				49FFBFA6433ECAA39632A19F /* ChartFixtures.swift in Sources */,
+				B77860D1FE3F61DC66FA819A /* ChartParityTests.swift in Sources */,
+				DA79CC428BCE97C91CF32600 /* ChartPreferences.swift in Sources */,
+				2751D4B7F758F3E61456FA9C /* ChartRenderTests.swift in Sources */,
+				1AE84855554BF6D3ACC8B262 /* ChartTheme.swift in Sources */,
+				8F24D3AEC1C2871824435713 /* ContainerMetricChartView.swift in Sources */,
+				0FA5D177B5E94889ACE6CEF9 /* ContainerStatsRecord.swift in Sources */,
+				6B2583C6E13EE07620540AE2 /* DateFormatter+Extensions.swift in Sources */,
+				C8AEE18B4DB63A0DA4E0D4BB /* DetailedBandwidthView.swift in Sources */,
+				36B90DED297B632F003D95EF /* DetailedCpuChartView.swift in Sources */,
+				92D737A912421C92ED95DF53 /* DetailedDiskIOView.swift in Sources */,
+				25B0745D998A14E48E1CB48C /* DetailedExtraDiskIOView.swift in Sources */,
+				51BFB0D564C805713F53F0AF /* DetailedMemoryChartView.swift in Sources */,
+				4138C5DAB7D68F7CA4480BD6 /* DetailedNetworkChartView.swift in Sources */,
+				F4E0B88108747FDEBD5242EE /* DevelopmentSession.swift in Sources */,
+				ABF30D7720D6AFD22CE02F5A /* DiskIOSummaryChartView.swift in Sources */,
+				970F71BA8276FCF25CB129AC /* DownsampleMethod.swift in Sources */,
+				9CCD41122C59FE036555FCE9 /* ExtraDiskIOStatsChartViews.swift in Sources */,
+				EC3837EFA1D752703F3CD1D2 /* ExtraDiskIOSummaryChartView.swift in Sources */,
+				C0A89168366B401E3EA4AEE2 /* GPUChartData.swift in Sources */,
+				C76A24A97ED5CBFF1109DC06 /* HistorySeries.swift in Sources */,
+				7697F524522F1F40FEC08E2F /* HistoryTests.swift in Sources */,
+				3AE45A7F90BADC7D531A55B5 /* HubConnection.swift in Sources */,
+				EAA353F6F38FA78933EF4243 /* HubConnectionTests.swift in Sources */,
+				59F0527E6DDBFF84DA176C95 /* HubSnapshot.swift in Sources */,
+				464AEC1A59F080B44B9873FD /* IOSChartCard.swift in Sources */,
+				D5E24E03235A4F08998A7D46 /* KeychainService.swift in Sources */,
+				227372C17BE34373B8CE6384 /* KeychainServiceTests.swift in Sources */,
+				6BA11964B29B9CFE967A8494 /* Models.swift in Sources */,
+				04414FEE9200D249052D36BE /* MonitoringDesignSystem.swift in Sources */,
+				855BBC59A3272440055E6716 /* PinButtonView.swift in Sources */,
+				FB7ECF98F9D2F3530AE64DD0 /* PinnedItem.swift in Sources */,
+				E1C9F8D460F0C17F2ECC780F /* SensorChartData.swift in Sources */,
+				CCBB6B28C324EBEE30F2ECE1 /* SensorHistoryChart.swift in Sources */,
+				CFE378469FA299386035AFA3 /* SingleCPUCoreChart.swift in Sources */,
+				B641E3B3D8E459816F69A194 /* StackedChartData.swift in Sources */,
+				EBC7E7BF55AB9C7BFB070DFD /* StackedCpuChartView.swift in Sources */,
+				A549D09433E3BA5B20589F00 /* StackedMemoryChartView.swift in Sources */,
+				85C54625A14123C12A5EFBD1 /* StackedNetworkChartView.swift in Sources */,
+				FC70F15F03456C6C9713CB43 /* StatPoint.swift in Sources */,
+				E4AF6E851FAD097C1EADF97F /* StorageHistoryChart.swift in Sources */,
+				23C4414AA217EE508F321BD9 /* SystemAdditionalDisksIOChartView.swift in Sources */,
+				9ADD20B155966F4B8066F681 /* SystemBandwidthChartView.swift in Sources */,
+				4ACEDFAC0521536FEFD40A6E /* SystemBandwidthDetailChartViews.swift in Sources */,
+				0E7A62A000B4FB42C5275F90 /* SystemCpuDetailChartViews.swift in Sources */,
+				6D3F3DB99ABCF517C95AF8AF /* SystemCpuDetailView.swift in Sources */,
+				ACBFEFCFE2CCC9FADDFACA5D /* SystemCpuSummaryChartView.swift in Sources */,
+				DF30EA1B09FE7F695EA8567D /* SystemDataPoint.swift in Sources */,
+				2C736D96EFBF271D56B8271D /* SystemDiskIOChartView.swift in Sources */,
+				AB3B7F5FB2BE7E68E44ADBE4 /* SystemDiskIOStatsChartViews.swift in Sources */,
+				6AA2969ED346949EFD3FB216 /* SystemDiskUsageChartView.swift in Sources */,
+				75AB550E353ED7DDF658670D /* SystemGPUChartView.swift in Sources */,
+				C0DD63D5E2AD712D89DD9742 /* SystemLoadChartView.swift in Sources */,
+				264C2498232A6038C84E8912 /* SystemMetricChartView.swift in Sources */,
+				1328D6BF7FDA8EE9AC07A108 /* SystemNetworkInterfacesChartView.swift in Sources */,
+				BE632D6C1515E38B471EA118 /* SystemStatsRecord.swift in Sources */,
+				4DA33B51534E6ACCFC41EBEF /* SystemSummaryCard.swift in Sources */,
+				3EDF51A89C972ACECF886082 /* SystemSwapChartView.swift in Sources */,
+				7DF4CB33A06F0B38530AAE83 /* SystemTemperatureChartView.swift in Sources */,
+				66132320553507F5EB24E0D5 /* ZFSPoolRecord.swift in Sources */,
+				68F750E985FE9B26C39210BC /* ZFSPoolsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9E08420924F79418F9D59FFF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF8FD98E25D74E8C3A3634C1 /* ActivityDashboardViews.swift in Sources */,
 				CB822A6B39464AC684C2ACE1 /* AlertMenuRowView.swift in Sources */,
 				A8025428FBC26C5EDA34E16D /* AppDelegate.swift in Sources */,
 				8E1E8F9CCC1383C3C406A35A /* AppState.swift in Sources */,
+				0E2F35A11F00B7F78129728F /* BandwidthSummaryChartView.swift in Sources */,
 				B0C0312A6D672B48C138F70B /* BeszelAPIService.swift in Sources */,
 				8D66DE0702E9593562581913 /* BeszelBarApp.swift in Sources */,
+				AADA319FE0E427E9B8DDE177 /* CardGroupBoxStyle.swift in Sources */,
+				E9C3D35AD9EAC403704A20A6 /* ChartCatalog.swift in Sources */,
+				A4D02C3DD1FCECF2ED9E64C6 /* ChartDataLoader.swift in Sources */,
+				3DE0E114D535007F3D4A36AB /* ChartDataSet.swift in Sources */,
+				B59F33BA386284283C9CB591 /* ChartPreferences.swift in Sources */,
+				BD692DA9C61D393DB4315DBA /* ChartTheme.swift in Sources */,
 				020A2A7AD7195CF5D7697E62 /* ContainerMenuRowView.swift in Sources */,
+				E7F0D7735A3B062F1EA9C199 /* ContainerMetricChartView.swift in Sources */,
+				C305DA00E1856ADC33621AD6 /* ContainerStatsRecord.swift in Sources */,
+				0CEE956C2D43C22009A50134 /* DashboardView.swift in Sources */,
+				B191E71B42E2163271C9DE45 /* DateFormatter+Extensions.swift in Sources */,
+				8AB218016BFBBFEBD7AA3C8E /* DetailedBandwidthView.swift in Sources */,
+				4B3C42B30C908DE0151D5E04 /* DetailedCpuChartView.swift in Sources */,
+				47B8C8114F98DC9F4F24DEB3 /* DetailedDiskIOView.swift in Sources */,
+				657745418B195F03B37F5EEC /* DetailedExtraDiskIOView.swift in Sources */,
+				088748106A22B4E51F87E16C /* DetailedMemoryChartView.swift in Sources */,
+				0DB6D70AB2377BAE28A0E247 /* DetailedNetworkChartView.swift in Sources */,
+				2225C28E574A078BC5FB48D9 /* DevelopmentSession.swift in Sources */,
+				55B592970E81B1E0B0A06566 /* DiskIOSummaryChartView.swift in Sources */,
+				62C6FF6D57E4C10B5CE172FB /* DownsampleMethod.swift in Sources */,
+				E6D3D49C88124F07C6C701F6 /* ExtraDiskIOStatsChartViews.swift in Sources */,
+				311311896D387AB8A399E78C /* ExtraDiskIOSummaryChartView.swift in Sources */,
+				94326EC831BAD6EC9340336B /* GPUChartData.swift in Sources */,
+				ACAC0B863C634619CCAE8EC1 /* HistorySeries.swift in Sources */,
+				12E9EF77FA4D32D6CE7200CB /* HubConnection.swift in Sources */,
+				3467C3AB0E08D1E640388AF9 /* HubSnapshot.swift in Sources */,
+				BD0D100F24D2307B9F88B0B4 /* IOSChartCard.swift in Sources */,
 				1E13BD84CA99B1C01AAD9809 /* InfoMenuRowView.swift in Sources */,
 				8E94C9C4DDFA4ACAE37B963E /* KeychainService.swift in Sources */,
 				D34309692A8DBF8CDB89A18B /* MenuActions.swift in Sources */,
 				EE3535E8F86A11221CA1C31B /* MenuBuilder.swift in Sources */,
 				8A85D81AA6D64658D6D8D645 /* MenuHeaderView.swift in Sources */,
 				6C904759DA3567365D9D1A01 /* Models.swift in Sources */,
+				22F40F4ED31F690081A64C0F /* MonitoringDesignSystem.swift in Sources */,
+				EC2C2A3EE8BC7960B2170E3A /* MonitoringStyle.swift in Sources */,
+				77B0735762EE78F247FEC5EE /* PinButtonView.swift in Sources */,
+				A61AFED223CFB084C2AFC129 /* PinnedItem.swift in Sources */,
 				00BEF778E4F97D70D504F343 /* RefreshService.swift in Sources */,
+				62E43B344A64CB3F67279E5F /* SensorChartData.swift in Sources */,
+				DB6AA6C8F8460DA9F9062372 /* SensorHistoryChart.swift in Sources */,
 				165AEDF4EB29753333953503 /* SettingsView.swift in Sources */,
+				E2AE8383DAC8E1E82BA25B37 /* SingleCPUCoreChart.swift in Sources */,
+				669CE15B7F5D28487F32BCDB /* StackedChartData.swift in Sources */,
+				4EC3B0B68C9D4ABC63442E98 /* StackedCpuChartView.swift in Sources */,
+				30FB992FDC6F1785D1603126 /* StackedMemoryChartView.swift in Sources */,
+				D8394B7141782E541C573C8B /* StackedNetworkChartView.swift in Sources */,
+				FF2E842F48D21E9D9CF2CBE3 /* StatPoint.swift in Sources */,
+				F465D6F9DA873FCC1F5AF6A9 /* StorageHistoryChart.swift in Sources */,
+				9C81AF405A7FFC79E181E5D8 /* SystemAdditionalDisksIOChartView.swift in Sources */,
+				9740E5BFCED265E17557E9D3 /* SystemBandwidthChartView.swift in Sources */,
+				E70690FD75923BA7823EF048 /* SystemBandwidthDetailChartViews.swift in Sources */,
+				9C99FE02D63A98F241D283E2 /* SystemCpuDetailChartViews.swift in Sources */,
+				359054091B819F1EE7F1EE45 /* SystemCpuDetailView.swift in Sources */,
+				AAF8A7326DD9282CDABF5021 /* SystemCpuSummaryChartView.swift in Sources */,
+				24D55667FA42F287A69211CE /* SystemDashboardView.swift in Sources */,
+				E49397110257A066A805F3FA /* SystemDataPoint.swift in Sources */,
 				5644673A89BB724247D2FF40 /* SystemDetailView.swift in Sources */,
+				7AB8C2939C7CA5D55B2B47C7 /* SystemDiskIOChartView.swift in Sources */,
+				9738933B6958ECE2226528AB /* SystemDiskIOStatsChartViews.swift in Sources */,
+				FB41D15D091A34135A7D8EF8 /* SystemDiskUsageChartView.swift in Sources */,
+				8D08E2C6BD10F20F158D06BA /* SystemGPUChartView.swift in Sources */,
+				B24F25F2CCED18F1874B633E /* SystemLoadChartView.swift in Sources */,
 				9E4ECCBB9810EBA0DF4B44B0 /* SystemMenuRowView.swift in Sources */,
+				C020CC36101B22C2DB169D8E /* SystemMetricChartView.swift in Sources */,
+				E3E1A6FE53AD76DDA0524D25 /* SystemNetworkInterfacesChartView.swift in Sources */,
+				1EE6CE3E0999ED5702E17CBA /* SystemStatsRecord.swift in Sources */,
+				B20663FD7955BC80ADB16E4C /* SystemSummaryCard.swift in Sources */,
+				E062B1DB6E36EBB038EEF5CC /* SystemSwapChartView.swift in Sources */,
+				DC806106EDDFC55B3C6EB433 /* SystemTemperatureChartView.swift in Sources */,
 				FF577F1D0BB38BE9CBC139A9 /* WindowManager.swift in Sources */,
+				DF92C0EE2FB68222FCCA6A81 /* ZFSPoolRecord.swift in Sources */,
+				053187873ECCA87E46B71BA9 /* ZFSPoolsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		1504B8FD0BB250259DEDE7A6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 811F73FA409AA76DCB0DE0B4 /* BeszelBar */;
+			targetProxy = 575554811317696A7D70A768 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		0BFBFB462E065E8D5AF6C8BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.nohitdev.BeszelBarTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BeszelBar.app/Contents/MacOS/BeszelBar";
+			};
+			name = Debug;
+		};
+		24C0EC113972932A9B1EEBA7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.nohitdev.BeszelBarTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BeszelBar.app/Contents/MacOS/BeszelBar";
+			};
+			name = Release;
+		};
 		6337A7380A1CDC911B33022D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -398,6 +1028,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		3C56B99767460296F4E7465B /* Build configuration list for PBXNativeTarget "BeszelBarTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0BFBFB462E065E8D5AF6C8BD /* Debug */,
+				24C0EC113972932A9B1EEBA7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		639CD137B20AC72D8B9F09F8 /* Build configuration list for PBXProject "BeszelBar" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

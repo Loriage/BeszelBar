@@ -22,7 +22,7 @@ struct SettingsView: View {
             Group {
                 switch selectedTab {
                 case .general:
-                    GeneralView()
+                    GeneralView(appState: appState)
                 case .hubs:
                     HubsView(appState: appState)
                 case .about:
@@ -181,7 +181,7 @@ struct InstanceRow: View {
     let onEdit: () -> Void
 
     var isSelected: Bool {
-        instance.id == appState.selectedInstance?.id
+        !appState.showsAllHubs && instance.id == appState.selectedInstance?.id
     }
 
     var body: some View {
@@ -226,9 +226,11 @@ struct AddHubSheet: View {
 
     @State private var name = ""
     @State private var url = ""
+    @State private var fallbackURL = ""
     @State private var email = ""
     @State private var password = ""
     @State private var isLoading = false
+    @State private var saveTask: Task<Void, Never>?
     @State private var errorMessage: String?
 
     var body: some View {
@@ -242,9 +244,14 @@ struct AddHubSheet: View {
                 TextField("Name", text: $name)
                     .textFieldStyle(.roundedBorder)
 
-                TextField("URL", text: $url)
+                TextField("Primary URL", text: $url)
                     .textFieldStyle(.roundedBorder)
                     .textContentType(.URL)
+
+                TextField("Secondary URL (optional)", text: $fallbackURL)
+                    .textFieldStyle(.roundedBorder)
+                    .textContentType(.URL)
+                    .help("An alternative address for the same hub, used if the primary URL cannot be reached.")
 
                 TextField("Email", text: $email)
                     .textFieldStyle(.roundedBorder)
@@ -256,6 +263,10 @@ struct AddHubSheet: View {
             }
             .formStyle(.grouped)
             .scrollDisabled(true)
+            .disabled(isLoading)
+
+            Text("The secondary URL must point to the same Beszel hub. It is used automatically if the primary URL is unreachable.")
+                .font(.caption).foregroundStyle(.secondary).padding(.horizontal, 20)
 
             if let error = errorMessage {
                 Text(error)
@@ -289,33 +300,43 @@ struct AddHubSheet: View {
             }
             .padding()
         }
-        .frame(width: 380, height: 320)
+        .frame(width: 450, height: 420)
+        .onDisappear { saveTask?.cancel() }
     }
 
     private func testAndSave() {
         isLoading = true
         errorMessage = nil
 
-        let cleanURL = url.trimmingCharacters(in: .whitespacesAndNewlines).trimmingSuffix("/")
+        guard let cleanURL = HubURL.normalized(url), HubURL.baseURL(cleanURL) != nil,
+              HubURL.isValidFallback(fallbackURL) else {
+            errorMessage = "Enter valid HTTP or HTTPS hub URLs, without query parameters or fragments."
+            isLoading = false
+            return
+        }
+        let cleanFallbackURL = HubURL.normalized(fallbackURL) ?? ""
 
-        Task {
+        saveTask = Task {
             do {
                 let testInstance = Instance(
                     name: name,
                     url: cleanURL,
                     email: email,
-                    credential: password
+                    credential: password,
+                    fallbackURL: cleanFallbackURL
                 )
 
                 let service = BeszelAPIService(instance: testInstance)
                 _ = try await service.fetchSystems()
+                try Task.checkCancellation()
 
                 await MainActor.run {
-                    let instance = Instance(name: name, url: cleanURL, email: email, credential: password)
+                    let instance = Instance(name: name, url: cleanURL, email: email, credential: password, fallbackURL: cleanFallbackURL)
                     appState.addInstance(instance)
                     dismiss()
                 }
             } catch {
+                guard !Task.isCancelled else { return }
                 await MainActor.run {
                     errorMessage = "Connection failed: \(error.localizedDescription)"
                     isLoading = false
@@ -333,9 +354,11 @@ struct EditHubSheet: View {
 
     @State private var name: String
     @State private var url: String
+    @State private var fallbackURL: String
     @State private var email: String
     @State private var password: String
     @State private var isLoading = false
+    @State private var saveTask: Task<Void, Never>?
     @State private var errorMessage: String?
 
     init(appState: AppState, instance: Instance) {
@@ -343,8 +366,9 @@ struct EditHubSheet: View {
         self.instance = instance
         _name = State(initialValue: instance.name)
         _url = State(initialValue: instance.url)
+        _fallbackURL = State(initialValue: instance.fallbackURL)
         _email = State(initialValue: instance.email)
-        _password = State(initialValue: KeychainService.shared.loadCredential(for: instance.id.uuidString) ?? "")
+        _password = State(initialValue: appState.instanceWithCredential(instance).credential)
     }
 
     var body: some View {
@@ -358,8 +382,13 @@ struct EditHubSheet: View {
                 TextField("Name", text: $name)
                     .textFieldStyle(.roundedBorder)
 
-                TextField("URL", text: $url)
+                TextField("Primary URL", text: $url)
                     .textFieldStyle(.roundedBorder)
+
+                TextField("Secondary URL (optional)", text: $fallbackURL)
+                    .textFieldStyle(.roundedBorder)
+                    .textContentType(.URL)
+                    .help("An alternative address for the same hub, used if the primary URL cannot be reached.")
 
                 TextField("Email", text: $email)
                     .textFieldStyle(.roundedBorder)
@@ -369,6 +398,10 @@ struct EditHubSheet: View {
             }
             .formStyle(.grouped)
             .scrollDisabled(true)
+            .disabled(isLoading)
+
+            Text("The secondary URL must point to the same Beszel hub. It is used automatically if the primary URL is unreachable.")
+                .font(.caption).foregroundStyle(.secondary).padding(.horizontal, 20)
 
             if let error = errorMessage {
                 Text(error)
@@ -403,31 +436,41 @@ struct EditHubSheet: View {
             }
             .padding()
         }
-        .frame(width: 380, height: 340)
+        .frame(width: 450, height: 440)
+        .onDisappear { saveTask?.cancel() }
     }
 
     private func testAndSave() {
         isLoading = true
         errorMessage = nil
 
-        let cleanURL = url.trimmingCharacters(in: .whitespacesAndNewlines).trimmingSuffix("/")
+        guard let cleanURL = HubURL.normalized(url), HubURL.baseURL(cleanURL) != nil,
+              HubURL.isValidFallback(fallbackURL) else {
+            errorMessage = "Enter valid HTTP or HTTPS hub URLs, without query parameters or fragments."
+            isLoading = false
+            return
+        }
+        let cleanFallbackURL = HubURL.normalized(fallbackURL) ?? ""
 
-        Task {
+        saveTask = Task {
             do {
                 let testInstance = Instance(
                     name: name,
                     url: cleanURL,
                     email: email,
-                    credential: password.isEmpty ? instance.credential : password
+                    credential: password.isEmpty ? appState.instanceWithCredential(instance).credential : password,
+                    fallbackURL: cleanFallbackURL
                 )
 
                 let service = BeszelAPIService(instance: testInstance)
                 _ = try await service.fetchSystems()
+                try Task.checkCancellation()
 
                 await MainActor.run {
                     var updated = instance
                     updated.name = name
                     updated.url = cleanURL
+                    updated.fallbackURL = cleanFallbackURL
                     updated.email = email
                     if !password.isEmpty {
                         updated.credential = password
@@ -436,6 +479,7 @@ struct EditHubSheet: View {
                     dismiss()
                 }
             } catch {
+                guard !Task.isCancelled else { return }
                 await MainActor.run {
                     errorMessage = "Connection failed: \(error.localizedDescription)"
                     isLoading = false
@@ -446,6 +490,7 @@ struct EditHubSheet: View {
 }
 
 struct GeneralView: View {
+    let appState: AppState
     @AppStorage("refreshInterval") private var refreshInterval = 30
     @AppStorage("launchAtLogin") private var launchAtLogin = false
 
@@ -491,6 +536,9 @@ struct GeneralView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)
+
+                Divider().padding(.horizontal, 20)
+                SystemPermissionsSettings(instances: appState.instances)
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -515,6 +563,78 @@ struct GeneralView: View {
             }
         } catch {
             print("Failed to set launch at login: \(error)")
+        }
+    }
+}
+
+private struct SystemPermissionsSettings: View {
+    let instances: [Instance]
+    @State private var requestTask: Task<Void, Never>?
+    @State private var isRequesting = false
+    @State private var result: LocalizedStringKey?
+
+    private var endpoints: [URL] {
+        Array(Set(instances.flatMap { [$0.url, $0.fallbackURL] }.compactMap(HubURL.baseURL)))
+            .sorted { $0.absoluteString < $1.absoluteString }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("System Permissions").font(.headline)
+            Text("Retry access to your configured hubs to trigger a pending local network request. If you previously denied access, enable BeszelBar in System Settings → Privacy & Security → Local Network.")
+                .font(.caption).foregroundStyle(.secondary)
+            HStack {
+                Button("Retry Network Access", action: requestAccess)
+                    .buttonStyle(PillButtonStyle())
+                    .disabled(isRequesting || endpoints.isEmpty)
+                if isRequesting { ProgressView().controlSize(.small) }
+            }
+            Button("Open System Permissions") {
+                let settings = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_LocalNetwork")!
+                if !NSWorkspace.shared.open(settings) {
+                    NSWorkspace.shared.open(URL(fileURLWithPath: "/System/Applications/System Settings.app"))
+                }
+            }
+            .buttonStyle(PillButtonStyle())
+            if endpoints.isEmpty {
+                Text("Add a hub with a local address to request local network access.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            if let result {
+                Text(result).font(.caption).foregroundStyle(.secondary)
+            }
+        }
+        .padding(.horizontal, 20).padding(.vertical, 12)
+        .onDisappear { requestTask?.cancel() }
+    }
+
+    private func requestAccess() {
+        let urls = endpoints
+        isRequesting = true
+        result = nil
+        requestTask = Task { @MainActor in
+            defer { isRequesting = false; requestTask = nil }
+            // Probe both addresses directly: a cached fallback must not skip the LAN.
+            // Health requests require no credentials and do not change hub data.
+            let configuration = URLSessionConfiguration.ephemeral
+            configuration.waitsForConnectivity = false
+            let session = URLSession(configuration: configuration)
+            defer { session.invalidateAndCancel() }
+            var allReachable = true
+            for url in urls {
+                guard !Task.isCancelled else { return }
+                let request = URLRequest(url: url.appendingPathComponent("api/health"),
+                    cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 8)
+                do {
+                    _ = try await session.data(for: request)
+                } catch {
+                    allReachable = false
+                }
+            }
+            guard !Task.isCancelled else { return }
+            result = allReachable
+                ? "Configured hub addresses are reachable."
+                : "Some hub addresses could not be reached. Check local network access in System Settings and your hub addresses, then retry."
         }
     }
 }

@@ -6,10 +6,12 @@ final class RefreshService {
     static let shared = RefreshService()
 
     private var timer: Timer?
+    private var scheduledInterval: Int?
     private var cancellables = Set<AnyCancellable>()
 
     private var refreshInterval: Int {
-        UserDefaults.standard.integer(forKey: "refreshInterval").clamped(to: 10...300)
+        let value = UserDefaults.standard.object(forKey: "refreshInterval") as? Int ?? 30
+        return value.clamped(to: 10...300)
     }
 
     private init() {
@@ -25,6 +27,7 @@ final class RefreshService {
         stop()
 
         let interval = TimeInterval(refreshInterval)
+        scheduledInterval = refreshInterval
         timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 self?.refresh()
@@ -40,14 +43,12 @@ final class RefreshService {
     }
 
     private func restartIfNeeded() {
-        guard timer != nil else { return }
+        guard timer != nil, scheduledInterval != refreshInterval else { return }
         start()
     }
 
     private func refresh() {
-        AppState.shared.loadSystems()
-        AppState.shared.loadAlerts()
-        AppState.shared.loadContainers()
+        AppState.shared.refresh()
     }
 }
 
