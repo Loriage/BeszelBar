@@ -17,32 +17,30 @@ enum MenuBuilder {
         menu.addItem(headerItem)
 
         if !appState.activeAlerts.isEmpty {
-            menu.addItem(createAlertsSubmenu(alerts: appState.activeAlerts, systems: appState.selectedInstanceSystems))
+            menu.addItem(createAlertsSubmenu(alerts: appState.activeAlerts))
             menu.addItem(NSMenuItem.separator())
         }
 
         if appState.instances.isEmpty {
             menu.addItem(createInfoItem("No Hub Configured", subtext: "Open Settings to add a hub"))
-        } else if appState.isLoading {
-            let item = NSMenuItem(title: "Loading...", action: nil, keyEquivalent: "")
-            item.isEnabled = false
-            menu.addItem(item)
-        } else if appState.selectedInstanceSystems.isEmpty {
-            menu.addItem(createInfoItem("No Systems Found", subtext: "Check your hub configuration"))
         } else {
-            for system in appState.selectedInstanceSystems.prefix(15) {
-                let item = createSystemItem(for: system, appState: appState)
-                menu.addItem(item)
-            }
-
-            if appState.selectedInstanceSystems.count > 15 {
-                let more = NSMenuItem(title: "+\(appState.selectedInstanceSystems.count - 15) more systems", action: nil, keyEquivalent: "")
-                more.isEnabled = false
-                more.attributedTitle = NSAttributedString(
-                    string: "+\(appState.selectedInstanceSystems.count - 15) more systems",
-                    attributes: [.foregroundColor: NSColor.secondaryLabelColor]
-                )
-                menu.addItem(more)
+            for instance in appState.visibleInstances {
+                let snapshot = appState.hubSnapshots[instance.id] ?? HubSnapshot()
+                if appState.showsAllHubs {
+                    let heading = NSMenuItem.sectionHeader(title: instance.displayName)
+                    menu.addItem(heading)
+                }
+                if let notice = snapshot.notice {
+                    menu.addItem(createInfoItem("Hub needs attention", subtext: notice))
+                }
+                if snapshot.isLoading && snapshot.systems.isEmpty {
+                    menu.addItem(createInfoItem("Loading…", subtext: nil))
+                } else if snapshot.systems.isEmpty && snapshot.errorMessage == nil {
+                    menu.addItem(createInfoItem("No Systems Found", subtext: nil))
+                }
+                for system in snapshot.systems {
+                    menu.addItem(createSystemItem(for: HubSystem(instance: instance, system: system, connectionURL: snapshot.connectedURL), appState: appState))
+                }
             }
         }
 
@@ -51,6 +49,11 @@ enum MenuBuilder {
         if appState.instances.count > 1 {
             menu.addItem(createHubSwitcherSubmenu(appState: appState))
         }
+
+        let dashboardItem = NSMenuItem(title: "Open Dashboard…", action: #selector(MenuActions.openDashboard(_:)), keyEquivalent: "d")
+        dashboardItem.target = actions
+        dashboardItem.image = NSImage(systemSymbolName: "rectangle.split.2x2", accessibilityDescription: nil)
+        menu.addItem(dashboardItem)
 
         let settingsItem = NSMenuItem(
             title: "Settings...",
@@ -86,11 +89,16 @@ enum MenuBuilder {
     }
 
     private static func createHubSwitcherSubmenu(appState: AppState) -> NSMenuItem {
-        let item = NSMenuItem(title: "Switch Hub", action: nil, keyEquivalent: "")
+        let item = NSMenuItem(title: "Show Hubs", action: nil, keyEquivalent: "")
         item.image = NSImage(systemSymbolName: "arrow.left.arrow.right", accessibilityDescription: nil)
         item.image?.size = NSSize(width: 14, height: 14)
 
         let submenu = NSMenu()
+        let allItem = NSMenuItem(title: "All Hubs", action: #selector(MenuActions.showAllHubs(_:)), keyEquivalent: "")
+        allItem.target = MenuActions.shared
+        allItem.state = appState.showsAllHubs ? .on : .off
+        submenu.addItem(allItem)
+        submenu.addItem(.separator())
         for instance in appState.instances {
             let hubItem = NSMenuItem(
                 title: instance.name.isEmpty ? instance.url : instance.name,
@@ -100,7 +108,7 @@ enum MenuBuilder {
             hubItem.target = MenuActions.shared
             hubItem.representedObject = instance.id
 
-            if instance.id == appState.selectedInstance?.id {
+            if !appState.showsAllHubs && instance.id == appState.selectedInstance?.id {
                 hubItem.state = .on
             }
 
@@ -111,7 +119,7 @@ enum MenuBuilder {
         return item
     }
 
-    private static func createAlertsSubmenu(alerts: [AlertRecord], systems: [SystemRecord]) -> NSMenuItem {
+    private static func createAlertsSubmenu(alerts: [HubAlert]) -> NSMenuItem {
         let item = NSMenuItem(title: "Alerts (\(alerts.count))", action: nil, keyEquivalent: "")
         item.image = NSImage(systemSymbolName: "exclamationmark.triangle.fill", accessibilityDescription: nil)
         item.image?.size = NSSize(width: 14, height: 14)
@@ -119,8 +127,9 @@ enum MenuBuilder {
 
         let submenu = NSMenu()
 
-        for alert in alerts.prefix(10) {
-            let systemName = systems.first(where: { $0.id == alert.system })?.name ?? alert.system ?? "Unknown"
+        for entry in alerts.prefix(10) {
+            let alert = entry.alert
+            let systemName = "\(entry.systemName) · \(entry.instance.displayName)"
             let alertItem = NSMenuItem()
 
             let view = NSHostingView(rootView: AlertMenuRowView(alert: alert, systemName: systemName))
@@ -150,14 +159,15 @@ enum MenuBuilder {
         return item
     }
 
-    private static func createSystemItem(for system: SystemRecord, appState: AppState) -> NSMenuItem {
+    private static func createSystemItem(for entry: HubSystem, appState: AppState) -> NSMenuItem {
+        let system = entry.system
         let item = NSMenuItem(
             title: system.name.isEmpty ? system.id : system.name,
             action: #selector(MenuActions.openSystemInBrowser(_:)),
             keyEquivalent: ""
         )
         item.target = MenuActions.shared
-        item.representedObject = system.id
+        item.representedObject = entry.id
 
         let hostingView = NSHostingView(rootView: SystemMenuRowView(system: system))
         hostingView.frame = NSRect(x: 0, y: 0, width: menuWidth, height: 44)
@@ -172,17 +182,18 @@ enum MenuBuilder {
 
         item.view = wrapper
 
-        let containers = appState.containers[system.id] ?? []
-        let submenu = createSystemSubmenu(for: system, containers: containers, appState: appState)
+        let snapshot = appState.hubSnapshots[entry.instance.id] ?? HubSnapshot()
+        let containers = snapshot.containers.filter { $0.system == system.id }
+        let submenu = createSystemSubmenu(for: entry, containers: containers, appState: appState)
         item.submenu = submenu
 
         return item
     }
 
-    private static func createSystemSubmenu(for system: SystemRecord, containers: [ContainerRecord], appState: AppState) -> NSMenu {
+    private static func createSystemSubmenu(for entry: HubSystem, containers: [ContainerRecord], appState: AppState) -> NSMenu {
         let submenu = NSMenu()
-
-        let details = appState.systemDetails[system.id]
+        let system = entry.system
+        let details = appState.hubSnapshots[entry.instance.id]?.details[system.id]
 
         let detailItem = NSMenuItem()
         let detailView = NSHostingView(rootView: SystemDetailView(system: system, details: details))
@@ -238,13 +249,18 @@ enum MenuBuilder {
 
         submenu.addItem(NSMenuItem.separator())
 
+        let dashboardItem = NSMenuItem(title: "View Charts…", action: #selector(MenuActions.openDashboard(_:)), keyEquivalent: "")
+        dashboardItem.target = MenuActions.shared
+        dashboardItem.representedObject = entry.id
+        submenu.addItem(dashboardItem)
+
         let openItem = NSMenuItem(
             title: "Open in Browser",
             action: #selector(MenuActions.openSystemInBrowser(_:)),
             keyEquivalent: ""
         )
         openItem.target = MenuActions.shared
-        openItem.representedObject = system.id
+        openItem.representedObject = entry.id
         openItem.image = NSImage(systemSymbolName: "safari", accessibilityDescription: nil)
         openItem.image?.size = NSSize(width: 14, height: 14)
         submenu.addItem(openItem)

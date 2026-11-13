@@ -30,5 +30,7 @@
     <string></string>
     <key>LSUIElement</key>
     <true/>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>BeszelBar connects to the Beszel hubs you configure on your local network to display your server metrics.</string>
 </dict>
 </plist>

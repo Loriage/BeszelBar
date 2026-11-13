@@ -1,0 +1,382 @@
+import SwiftUI
+import Charts
+
+struct SystemDiskIOUtilizationChartView: View {
+    let dataPoints: [SystemDataPoint]
+    let xAxisFormat: Date.FormatStyle
+
+    var systemName: String? = nil
+    var isPinned: Bool = false
+    var onPinToggle: () -> Void = {}
+
+    @Environment(\.chartXDomain) private var chartXDomain
+    @Environment(\.chartShowXGridLines) private var chartShowXGridLines
+
+    private var maxUtil: Double {
+        dataPoints.compactMap { $0.diskIOStats?.utilPct }.max() ?? 0
+    }
+
+    var body: some View {
+        GroupBox(label: HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                (Text("chart.disk.prefix") + Text(" ") + Text("chart.diskIO.utilization") + Text(" (%)"))
+                    .font(IOSFont.headline)
+                if systemName == nil {
+                    Text("chart.diskIO.utilization.subtitle")
+                        .font(IOSFont.caption2)
+                        .foregroundColor(.secondary)
+                }
+                if let systemName = systemName {
+                    Text(systemName)
+                        .font(IOSFont.caption2)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+            }
+            Spacer()
+            PinButtonView(isPinned: isPinned, action: onPinToggle)
+        }) {
+            Chart(dataPoints) { point in
+                if let stats = point.diskIOStats {
+                    LineMark(
+                x: .value("Date", point.date),
+                y: .value("Util", stats.utilPct),
+            )
+                    .foregroundStyle(.purple)
+                    AreaMark(
+                        x: .value("Date", point.date),
+                        yStart: .value("", 0),
+                        yEnd: .value("Util", stats.utilPct)
+                    )
+                    .foregroundStyle(LinearGradient(colors: [.purple.opacity(0.2), .clear], startPoint: .top, endPoint: .bottom))
+                }
+            }
+            .chartXAxis {
+                AxisMarks(values: insetTickDates(for: chartXDomain)) { _ in
+                    if chartShowXGridLines {
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: [2, 3]))
+                        AxisTick()
+                    }
+                    AxisValueLabel(format: xAxisFormat, anchor: .top, collisionResolution: .disabled)
+                        .font(IOSFont.caption2)
+                }
+            }
+            .chartYAxis {
+                AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) { value in
+                    AxisGridLine()
+                    AxisValueLabel {
+                        if let v = value.as(Double.self) {
+                            Text(String(format: "%.0f", v)).font(IOSFont.caption2).padding(.trailing, 6)
+                        }
+                    }
+                }
+            }
+            .chartYScale(domain: 0...min(niceYDomain(maxVal: Swift.max(maxUtil, 1)).max, 100))
+            .chartLegend(.hidden)
+            .chartXScaleIfNeeded(chartXDomain)
+            .padding(.top, 5)
+            .frame(height: 200)
+        }
+    }
+}
+
+struct SystemDiskIOTimesChartView: View {
+    let dataPoints: [SystemDataPoint]
+    let xAxisFormat: Date.FormatStyle
+
+    var systemName: String? = nil
+    var isPinned: Bool = false
+    var onPinToggle: () -> Void = {}
+
+    @Environment(\.chartXDomain) private var chartXDomain
+    @Environment(\.chartShowXGridLines) private var chartShowXGridLines
+
+    private var maxTime: Double {
+        dataPoints.compactMap { $0.diskIOStats }.flatMap { [$0.readTimePct, $0.writeTimePct] }.max() ?? 0
+    }
+
+    var body: some View {
+        GroupBox(label: HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                (Text("chart.disk.prefix") + Text(" ") + Text("chart.diskIO.times") + Text(" (%)"))
+                    .font(IOSFont.headline)
+                if systemName == nil {
+                    Text("chart.diskIO.times.subtitle")
+                        .font(IOSFont.caption2)
+                        .foregroundColor(.secondary)
+                }
+                if let systemName = systemName {
+                    Text(systemName)
+                        .font(IOSFont.caption2)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+            }
+            Spacer()
+            PinButtonView(isPinned: isPinned, action: onPinToggle)
+        }) {
+            VStack(spacing: 4) {
+                Chart(dataPoints) { point in
+                    if let stats = point.diskIOStats {
+                        Plot {
+                            LineMark(
+                                x: .value("Date", point.date),
+                                y: .value("Read", stats.readTimePct),
+                            series: .value("Period", "Read")
+                            )
+                            .foregroundStyle(.blue)
+                            AreaMark(
+                                x: .value("Date", point.date),
+                                yStart: .value("", 0),
+                                yEnd: .value("Read", stats.readTimePct),
+                            series: .value("Period", "Read")
+                            )
+                            .foregroundStyle(LinearGradient(colors: [.blue.opacity(0.2), .clear], startPoint: .top, endPoint: .bottom))
+                        }
+                        Plot {
+                            LineMark(
+                                x: .value("Date", point.date),
+                                y: .value("Write", stats.writeTimePct),
+                            series: .value("Period", "Write")
+                            )
+                            .foregroundStyle(.orange)
+                            AreaMark(
+                                x: .value("Date", point.date),
+                                yStart: .value("", 0),
+                                yEnd: .value("Write", stats.writeTimePct),
+                            series: .value("Period", "Write")
+                            )
+                            .foregroundStyle(LinearGradient(colors: [.orange.opacity(0.2), .clear], startPoint: .top, endPoint: .bottom))
+                        }
+                    }
+                }
+                .chartXAxis {
+                    AxisMarks(values: insetTickDates(for: chartXDomain)) { _ in
+                    if chartShowXGridLines {
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: [2, 3]))
+                        AxisTick()
+                    }
+                    AxisValueLabel(format: xAxisFormat, anchor: .top, collisionResolution: .disabled)
+                        .font(IOSFont.caption2)
+                }
+                }
+                .chartYAxis {
+                    AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) { value in
+                        AxisGridLine()
+                        AxisValueLabel {
+                            if let v = value.as(Double.self) {
+                                Text(String(format: "%.0f", v)).font(IOSFont.caption2).padding(.trailing, 6)
+                            }
+                        }
+                    }
+                }
+                    .chartYScale(domain: 0...min(niceYDomain(maxVal: Swift.max(maxTime, 1)).max, 100))
+                .chartLegend(.hidden)
+                .chartXScaleIfNeeded(chartXDomain)
+                .padding(.top, 5)
+                .frame(height: 185)
+
+                HStack(spacing: 12) {
+                    HStack(spacing: 4) {
+                        Circle().fill(.blue).frame(width: 8, height: 8)
+                        Text("chart.diskIO.readTime").font(IOSFont.caption2).foregroundStyle(.secondary)
+                    }
+                    HStack(spacing: 4) {
+                        Circle().fill(.orange).frame(width: 8, height: 8)
+                        Text("chart.diskIO.writeTime").font(IOSFont.caption2).foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .frame(height: 200)
+        }
+    }
+}
+
+struct SystemDiskAwaitChartView: View {
+    let dataPoints: [SystemDataPoint]
+    let xAxisFormat: Date.FormatStyle
+
+    var systemName: String? = nil
+    var isPinned: Bool = false
+    var onPinToggle: () -> Void = {}
+
+    @Environment(\.chartXDomain) private var chartXDomain
+    @Environment(\.chartShowXGridLines) private var chartShowXGridLines
+
+    private var maxAwait: Double {
+        dataPoints.compactMap { $0.diskIOStats }.flatMap { [$0.rAwait, $0.wAwait] }.max() ?? 0
+    }
+
+    var body: some View {
+        GroupBox(label: HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                (Text("chart.disk.prefix") + Text(" ") + Text("chart.diskIO.await") + Text(" (ms)"))
+                    .font(IOSFont.headline)
+                if systemName == nil {
+                    Text("chart.diskIO.await.subtitle")
+                        .font(IOSFont.caption2)
+                        .foregroundColor(.secondary)
+                }
+                if let systemName = systemName {
+                    Text(systemName)
+                        .font(IOSFont.caption2)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+            }
+            Spacer()
+            PinButtonView(isPinned: isPinned, action: onPinToggle)
+        }) {
+            VStack(spacing: 4) {
+                Chart(dataPoints) { point in
+                    if let stats = point.diskIOStats {
+                        Plot {
+                            LineMark(
+                                x: .value("Date", point.date),
+                                y: .value("rAwait", stats.rAwait),
+                                series: .value("Period", "Read")
+                            )
+                            .foregroundStyle(.blue)
+                            AreaMark(
+                                x: .value("Date", point.date),
+                                yStart: .value("", 0),
+                                yEnd: .value("rAwait", stats.rAwait),
+                                series: .value("Period", "Read")
+                            )
+                            .foregroundStyle(LinearGradient(colors: [.blue.opacity(0.2), .clear], startPoint: .top, endPoint: .bottom))
+                        }
+                        Plot {
+                            LineMark(
+                                x: .value("Date", point.date),
+                                y: .value("wAwait", stats.wAwait),
+                                series: .value("Period", "Write")
+                            )
+                            .foregroundStyle(.orange)
+                            AreaMark(
+                                x: .value("Date", point.date),
+                                yStart: .value("", 0),
+                                yEnd: .value("wAwait", stats.wAwait),
+                                series: .value("Period", "Write")
+                            )
+                            .foregroundStyle(LinearGradient(colors: [.orange.opacity(0.2), .clear], startPoint: .top, endPoint: .bottom))
+                        }
+                    }
+                }
+                .chartXAxis {
+                    AxisMarks(values: insetTickDates(for: chartXDomain)) { _ in
+                    if chartShowXGridLines {
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: [2, 3]))
+                        AxisTick()
+                    }
+                    AxisValueLabel(format: xAxisFormat, anchor: .top, collisionResolution: .disabled)
+                        .font(IOSFont.caption2)
+                }
+                }
+                .chartYAxis {
+                    AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) { value in
+                        AxisGridLine()
+                        AxisValueLabel {
+                            if let v = value.as(Double.self) {
+                                Text(String(format: "%.1f", v)).font(IOSFont.caption2).padding(.trailing, 6)
+                            }
+                        }
+                    }
+                }
+                .chartYScale(domain: 0...niceYDomain(maxVal: Swift.max(maxAwait, 1)).max)
+                .chartLegend(.hidden)
+                .chartXScaleIfNeeded(chartXDomain)
+                .padding(.top, 5)
+                .frame(height: 185)
+
+                HStack(spacing: 12) {
+                    HStack(spacing: 4) {
+                        Circle().fill(.blue).frame(width: 8, height: 8)
+                        Text("chart.diskIO.rAwait").font(IOSFont.caption2).foregroundStyle(.secondary)
+                    }
+                    HStack(spacing: 4) {
+                        Circle().fill(.orange).frame(width: 8, height: 8)
+                        Text("chart.diskIO.wAwait").font(IOSFont.caption2).foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .frame(height: 200)
+        }
+    }
+}
+
+struct SystemDiskIOQueueDepthChartView: View {
+    let dataPoints: [SystemDataPoint]
+    let xAxisFormat: Date.FormatStyle
+
+    var systemName: String? = nil
+    var isPinned: Bool = false
+    var onPinToggle: () -> Void = {}
+
+    @Environment(\.chartXDomain) private var chartXDomain
+    @Environment(\.chartShowXGridLines) private var chartShowXGridLines
+
+    private var maxDepth: Double {
+        dataPoints.compactMap { $0.diskIOStats?.weightedIO }.max() ?? 0
+    }
+
+    var body: some View {
+        GroupBox(label: HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                (Text("chart.disk.prefix") + Text(" ") + Text("chart.diskIO.queueDepth"))
+                    .font(IOSFont.headline)
+                if systemName == nil {
+                    Text("chart.diskIO.queueDepth.subtitle")
+                        .font(IOSFont.caption2)
+                        .foregroundColor(.secondary)
+                }
+                if let systemName = systemName {
+                    Text(systemName)
+                        .font(IOSFont.caption2)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+            }
+            Spacer()
+            PinButtonView(isPinned: isPinned, action: onPinToggle)
+        }) {
+            Chart(dataPoints) { point in
+                let depth = point.diskIOStats?.weightedIO ?? 0
+                LineMark(
+                x: .value("Date", point.date),
+                y: .value("Depth", depth),
+            )
+                    .foregroundStyle(.teal)
+                AreaMark(x: .value("Date", point.date), yStart: .value("", 0), yEnd: .value("Depth", depth))
+                    .foregroundStyle(LinearGradient(colors: [.teal.opacity(0.2), .clear], startPoint: .top, endPoint: .bottom))
+            }
+            .chartXAxis {
+                AxisMarks(values: insetTickDates(for: chartXDomain)) { _ in
+                    if chartShowXGridLines {
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: [2, 3]))
+                        AxisTick()
+                    }
+                    AxisValueLabel(format: xAxisFormat, anchor: .top, collisionResolution: .disabled)
+                        .font(IOSFont.caption2)
+                }
+            }
+            .chartYAxis {
+                AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) { value in
+                    AxisGridLine()
+                    AxisValueLabel {
+                        if let v = value.as(Double.self) {
+                            let s = v.truncatingRemainder(dividingBy: 1) == 0
+                                ? String(format: "%.0f", v)
+                                : String(format: "%.2f", v)
+                            Text(s).font(IOSFont.caption2).padding(.trailing, 6)
+                        }
+                    }
+                }
+            }
+            .chartYScale(domain: 0...niceYDomain(maxVal: Swift.max(maxDepth, 1)).max)
+            .chartLegend(.hidden)
+            .chartXScaleIfNeeded(chartXDomain)
+            .padding(.top, 5)
+            .frame(height: 200)
+        }
+    }
+}

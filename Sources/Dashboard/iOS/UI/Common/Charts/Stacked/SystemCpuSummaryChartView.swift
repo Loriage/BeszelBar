@@ -1,0 +1,88 @@
+import SwiftUI
+import Charts
+
+struct SystemCpuSummaryChartView: View {
+    let dataPoints: [SystemDataPoint]
+    let systemID: String?
+    var systemName: String? = nil
+
+    @Environment(ChartSettings.self) var settingsManager
+    @Environment(\.chartXDomain) private var chartXDomain
+    @Environment(\.chartShowXGridLines) private var chartShowXGridLines
+
+    private var xAxisFormat: Date.FormatStyle {
+        settingsManager.selectedTimeRange.xAxisFormat
+    }
+
+    var body: some View {
+        NavigationLink(destination: SystemCpuDetailView(
+            dataPoints: dataPoints,
+            xAxisFormat: xAxisFormat,
+            systemID: systemID,
+            xDomain: chartXDomain
+        )
+        .environment(\.chartShowXGridLines, chartShowXGridLines)
+        ) {
+            GroupBox(label: HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    (Text("chart.cpuUsage") + Text(" (%)"))
+                        .font(IOSFont.headline)
+                    if systemName == nil {
+                        Text("chart.cpuUsage.subtitle")
+                            .font(IOSFont.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                    if let systemName = systemName {
+                        Text(systemName)
+                            .font(IOSFont.caption2)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    }
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(IOSFont.footnote.weight(.semibold))
+                    .foregroundColor(.secondary)
+            }) {
+                Chart(dataPoints) { point in
+                    LineMark(
+                x: .value("Date", point.date),
+                y: .value("CPU", point.cpu),
+            )
+                    .foregroundStyle(.blue)
+                    AreaMark(
+                        x: .value("Date", point.date),
+                        yStart: .value("", 0),
+                        yEnd: .value("CPU", point.cpu)
+                    )
+                    .foregroundStyle(LinearGradient(colors: [.blue.opacity(0.2), .clear], startPoint: .top, endPoint: .bottom))
+                }
+                .chartXAxis {
+                    AxisMarks(values: insetTickDates(for: chartXDomain)) { _ in
+                    if chartShowXGridLines {
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: [2, 3]))
+                        AxisTick()
+                    }
+                    AxisValueLabel(format: xAxisFormat, anchor: .top, collisionResolution: .disabled)
+                        .font(IOSFont.caption2)
+                }
+                }
+                .chartYAxis {
+                    AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) { value in
+                        AxisGridLine()
+                        AxisValueLabel {
+                            if let v = value.as(Double.self) {
+                                Text(String(format: "%.0f", v)).font(IOSFont.caption2).padding(.trailing, 6)
+                            }
+                        }
+                    }
+                }
+                .chartLegend(.hidden)
+                .chartXScaleIfNeeded(chartXDomain)
+                .padding(.top, 5)
+                .frame(height: 200)
+            }
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}

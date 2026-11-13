@@ -50,6 +50,58 @@
           "com.apple.security.app-sandbox": false
         }
       }
+    },
+    "BeszelBarTests": {
+      "type": "bundle.unit-test",
+      "platform": "macOS",
+      "sources": [
+        "Tests",
+        "Sources/Models",
+        "Sources/App/AppState.swift",
+        "Sources/App/DevelopmentSession.swift",
+        "Sources/Services/BeszelAPIService.swift",
+        "Sources/Services/HubConnection.swift",
+        "Sources/Services/KeychainService.swift",
+        "Sources/Dashboard/iOS",
+        "Sources/Dashboard/IOSChartCard.swift",
+        "Sources/Dashboard/SingleCPUCoreChart.swift",
+        "Sources/Dashboard/ChartPreferences.swift",
+        "Resources/Localizable.xcstrings"
+      ],
+      "settings": {
+        "base": {
+          "GENERATE_INFOPLIST_FILE": "YES",
+          "PRODUCT_BUNDLE_IDENTIFIER": "com.nohitdev.BeszelBarTests",
+          "TEST_HOST": "$(BUILT_PRODUCTS_DIR)/BeszelBar.app/Contents/MacOS/BeszelBar",
+          "BUNDLE_LOADER": "$(TEST_HOST)"
+        }
+      },
+      "dependencies": [
+        {
+          "target": "BeszelBar"
+        }
+      ]
+    }
+  },
+  "schemes": {
+    "BeszelBar": {
+      "build": {
+        "targets": {
+          "BeszelBar": "all",
+          "BeszelBarTests": [
+            "test"
+          ]
+        }
+      },
+      "test": {
+        "targets": [
+          "BeszelBarTests"
+        ],
+        "environmentVariables": {
+          "BESZELBAR_TEST_HOST": "1",
+          "AppleLanguages": "(fr)"
+        }
+      }
     }
   }
 }

@@ -1,41 +1,84 @@
 import Foundation
 
-final class BeszelAPIService: @unchecked Sendable {
+protocol BeszelServing: Sendable {
+    func fetchSystems() async throws -> [SystemRecord]
+    func fetchSystemDetails() async throws -> [SystemDetailsRecord]
+    func fetchContainers(filter: String?) async throws -> [ContainerRecord]
+    func fetchAlerts(filter: String?) async throws -> [AlertRecord]
+    func fetchHistory(systemID: String, range: HistoryRange, now: Date) async throws -> [SystemStatsRecord]
+    func fetchDetailedHistory(systemID: String, range: HistoryRange, now: Date) async throws -> [DetailedSystemRecord]
+    func fetchContainerHistory(systemID: String, range: HistoryRange, now: Date) async throws -> [DetailedContainerRecord]
+    func fetchZFSPools(systemID: String) async throws -> [ZFSPoolRecord]
+    func currentEndpoint() async -> URL?
+}
+
+extension BeszelServing {
+    func fetchDetailedHistory(systemID: String, range: HistoryRange, now: Date) async throws -> [DetailedSystemRecord] { [] }
+    func fetchContainerHistory(systemID: String, range: HistoryRange, now: Date) async throws -> [DetailedContainerRecord] { [] }
+    func fetchZFSPools(systemID: String) async throws -> [ZFSPoolRecord] { [] }
+    func currentEndpoint() async -> URL? { nil }
+}
+
+actor BeszelAPIService: BeszelServing {
     private let instance: Instance
     private var authToken: String?
-    private let lock = NSLock()
+    private var authenticationTask: Task<String, Error>?
 
-    private let session: URLSession = {
-        let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 15
-        config.timeoutIntervalForResource = 30
-        return URLSession(configuration: config)
-    }()
+    private let connection: HubConnection
 
     private let jsonDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let value = try decoder.singleValueContainer().decode(String.self)
+            if let date = DateFormatter.pocketBase.date(from: value) { return date }
+            let iso = ISO8601DateFormatter()
+            iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            if let date = iso.date(from: value) { return date }
+            iso.formatOptions = [.withInternetDateTime]
+            guard let date = iso.date(from: value) else {
+                throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Invalid sample date"))
+            }
+            return date
+        }
         return decoder
     }()
 
-    init(instance: Instance) {
-        self.instance = instance
+    init(instance: Instance, session: URLSession? = nil) {
+        var normalized = instance
+        normalized.url = HubURL.normalized(instance.url) ?? instance.url
+        normalized.fallbackURL = HubURL.normalized(instance.fallbackURL) ?? ""
+        self.instance = normalized
+        let configuredSession: URLSession
+        if let session {
+            configuredSession = session
+        } else {
+            let config = URLSessionConfiguration.default
+            config.timeoutIntervalForRequest = 15
+            config.timeoutIntervalForResource = 30
+            configuredSession = URLSession(configuration: config)
+        }
+        self.connection = HubConnection(baseURL: normalized.url, fallbackURL: normalized.fallbackURL) { request in
+            try await configuredSession.data(for: request)
+        }
     }
+
+    func currentEndpoint() async -> URL? { await connection.currentEndpoint }
 
     private func getValidToken() async throws -> String {
         if let currentToken = authToken {
             return currentToken
         }
 
-        let cred = instance.credential
-        guard !cred.isEmpty else {
-            throw URLError(.userAuthenticationRequired)
+        if let authenticationTask { return try await authenticationTask.value }
+        let credential = instance.credential
+        guard !credential.isEmpty else { throw URLError(.userAuthenticationRequired) }
+        let task = Task {
+            if isJWT(credential) { return try await refreshToken(currentToken: credential) }
+            return try await loginWithPassword(password: credential)
         }
-
-        if isJWT(cred) {
-            return try await refreshToken(currentToken: cred)
-        } else {
-            return try await loginWithPassword(password: cred)
-        }
+        authenticationTask = task
+        defer { authenticationTask = nil }
+        return try await task.value
     }
 
     private func isJWT(_ str: String) -> Bool {
@@ -55,16 +98,14 @@ final class BeszelAPIService: @unchecked Sendable {
         let body: [String: String] = ["identity": instance.email, "password": password]
         request.httpBody = try JSONEncoder().encode(body)
 
-        let (data, response) = try await self.session.data(for: request)
+        let (data, response) = try await connection.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw URLError(.userAuthenticationRequired)
         }
 
         let authResponse = try jsonDecoder.decode(AuthResponse.self, from: data)
-        lock.lock()
         self.authToken = authResponse.token
-        lock.unlock()
         return authResponse.token
     }
 
@@ -77,16 +118,14 @@ final class BeszelAPIService: @unchecked Sendable {
         request.httpMethod = "POST"
         request.addValue("Bearer \(currentToken)", forHTTPHeaderField: "Authorization")
 
-        let (data, response) = try await self.session.data(for: request)
+        let (data, response) = try await connection.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw URLError(.userAuthenticationRequired)
         }
 
         let authResponse = try jsonDecoder.decode(AuthResponse.self, from: data)
-        lock.lock()
         self.authToken = authResponse.token
-        lock.unlock()
         return authResponse.token
     }
 
@@ -96,15 +135,13 @@ final class BeszelAPIService: @unchecked Sendable {
         var request = URLRequest(url: url)
         request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
-        let (data, response) = try await self.session.data(for: request)
+        let (data, response) = try await connection.data(for: request)
 
         if let httpResponse = response as? HTTPURLResponse {
             if httpResponse.statusCode == 200 {
                 return try jsonDecoder.decode(T.self, from: data)
             } else if httpResponse.statusCode == 401 && retryCount < 1 {
-                lock.lock()
                 authToken = nil
-                lock.unlock()
                 return try await performRequest(with: url, retryCount: retryCount + 1)
             } else {
                 throw BeszelAPIError.httpError(statusCode: httpResponse.statusCode, url: url.absoluteString)
@@ -115,42 +152,51 @@ final class BeszelAPIService: @unchecked Sendable {
     }
 
     func fetchSystems() async throws -> [SystemRecord] {
-        guard let url = URL(string: "\(instance.url)/api/collections/systems/records") else {
-            throw URLError(.badURL)
-        }
-
-        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-        components?.queryItems = [
-            URLQueryItem(name: "perPage", value: "500")
-        ]
-
-        guard let finalURL = components?.url else { throw URLError(.badURL) }
-
-        let response: PocketBaseListResponse<SystemRecord> = try await performRequest(with: finalURL)
-        return response.items
+        try await fetchAllPages(path: "/api/collections/systems/records", filter: nil)
     }
 
     func fetchSystemDetails() async throws -> [SystemDetailsRecord] {
-        guard let url = URL(string: "\(instance.url)/api/collections/system_details/records") else {
-            throw URLError(.badURL)
-        }
-
         do {
-            let response: PocketBaseListResponse<SystemDetailsRecord> = try await performRequest(with: url)
-            return response.items
+            return try await fetchAllPages(path: "/api/collections/system_details/records", filter: nil)
         } catch let error as BeszelAPIError {
-            if case .httpError(let statusCode, _) = error, statusCode == 404 {
-                return []
-            }
+            if case .httpError(404, _) = error { return [] }
             throw error
         }
+    }
+
+    private func historyFilter(systemID: String, range: HistoryRange, now: Date) -> String {
+        let formatter = DateFormatter.pocketBase
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let start = formatter.string(from: now.addingTimeInterval(-range.duration - range.interval))
+        let escapedID = systemID.replacingOccurrences(of: "'", with: "\\'")
+        return "system = '\(escapedID)' && type = '\(range.recordType)' && created >= '\(start)'"
+    }
+
+    func fetchHistory(systemID: String, range: HistoryRange, now: Date) async throws -> [SystemStatsRecord] {
+        try await fetchAllPages(path: "/api/collections/system_stats/records", filter: historyFilter(systemID: systemID, range: range, now: now))
+    }
+
+    func fetchDetailedHistory(systemID: String, range: HistoryRange, now: Date) async throws -> [DetailedSystemRecord] {
+        try await fetchAllPages(path: "/api/collections/system_stats/records", filter: historyFilter(systemID: systemID, range: range, now: now))
+    }
+
+    func fetchContainerHistory(systemID: String, range: HistoryRange, now: Date) async throws -> [DetailedContainerRecord] {
+        do {
+            return try await fetchAllPages(path: "/api/collections/container_stats/records", filter: historyFilter(systemID: systemID, range: range, now: now))
+        } catch BeszelAPIError.httpError(404, _) { return [] }
+    }
+
+    func fetchZFSPools(systemID: String) async throws -> [ZFSPoolRecord] {
+        do {
+            return try await fetchAllPages(path: "/api/collections/zfs_pools/records", filter: "system = '\(systemID)'")
+        } catch BeszelAPIError.httpError(404, _) { return [] }
     }
 
     func fetchSystemStats(systemID: String, limit: Int = 1) async throws -> [SystemStatsRecord] {
         guard var components = URLComponents(string: instance.url) else {
             throw URLError(.badURL)
         }
-        components.path = "/api/collections/system_stats/records"
+        components.path += "/api/collections/system_stats/records"
         components.queryItems = [
             URLQueryItem(name: "perPage", value: String(limit)),
             URLQueryItem(name: "sort", value: "-created"),
@@ -171,7 +217,7 @@ final class BeszelAPIService: @unchecked Sendable {
         guard var components = URLComponents(string: instance.url) else {
             throw URLError(.badURL)
         }
-        components.path = "/api/collections/alerts/records"
+        components.path += "/api/collections/alerts/records"
         components.queryItems = [
             URLQueryItem(name: "perPage", value: String(limit)),
             URLQueryItem(name: "sort", value: "-created")
@@ -202,7 +248,7 @@ final class BeszelAPIService: @unchecked Sendable {
         guard var components = URLComponents(string: instance.url) else {
             throw URLError(.badURL)
         }
-        components.path = "/api/collections/container_stats/records"
+        components.path += "/api/collections/container_stats/records"
         components.queryItems = [
             URLQueryItem(name: "perPage", value: String(limit * 100)), // Get latest for multiple containers
             URLQueryItem(name: "sort", value: "-created"),
@@ -235,6 +281,7 @@ final class BeszelAPIService: @unchecked Sendable {
         var totalPages = 1
 
         repeat {
+            try Task.checkCancellation()
             let url = try buildURL(for: path, filter: filter, page: currentPage)
             let response: PocketBaseListResponse<T> = try await performRequest(with: url)
 
@@ -251,7 +298,8 @@ final class BeszelAPIService: @unchecked Sendable {
             throw URLError(.badURL)
         }
 
-        components.path = path
+        components.path = components.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        components.path = "/" + ([components.path, path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))].filter { !$0.isEmpty }.joined(separator: "/"))
         components.queryItems = [
             URLQueryItem(name: "perPage", value: "500"),
             URLQueryItem(name: "page", value: String(page))
@@ -274,9 +322,12 @@ enum BeszelAPIError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .httpError(let statusCode, let url):
-            return "HTTP \(statusCode) error for \(url)"
+        case .httpError(let statusCode, _):
+            switch statusCode {
+            case 401: return "Your session has expired. Check this hub's credentials in Settings."
+            case 403: return "This account does not have access to the requested data."
+            default: return "The hub could not complete the request (HTTP \(statusCode))."
+            }
         }
     }
 }
-
