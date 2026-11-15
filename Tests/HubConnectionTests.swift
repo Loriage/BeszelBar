@@ -107,11 +107,14 @@ final class HubConnectionTests: XCTestCase {
         let oldData = Data(#"{"id":"12345678-1234-1234-1234-123456789012","name":"Hub","url":"http://local.example","email":"test@example.com"}"#.utf8)
         var instance = try JSONDecoder().decode(Instance.self, from: oldData)
         XCTAssertEqual(instance.fallbackURL, "")
+        XCTAssertFalse(instance.isPublic)
         instance.fallbackURL = secondary
+        instance.isPublic = true
         instance.credential = "must-not-be-stored"
         let data = try JSONEncoder().encode(instance)
         XCTAssertFalse(String(decoding: data, as: UTF8.self).contains(instance.credential))
         XCTAssertEqual(try JSONDecoder().decode(Instance.self, from: data).fallbackURL, secondary)
+        XCTAssertTrue(try JSONDecoder().decode(Instance.self, from: data).isPublic)
     }
 }
 

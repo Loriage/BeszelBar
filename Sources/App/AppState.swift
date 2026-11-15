@@ -166,7 +166,9 @@ final class AppState {
     }
 
     func addInstance(_ instance: Instance) {
-        credentials.saveCredential(instance.credential, for: instance.id.uuidString)
+        if !instance.isPublic {
+            credentials.saveCredential(instance.credential, for: instance.id.uuidString)
+        }
         var stored = instance
         stored.credential = ""
         instances.append(stored)
@@ -189,7 +191,9 @@ final class AppState {
 
     func updateInstance(_ instance: Instance) {
         guard let index = instances.firstIndex(where: { $0.id == instance.id }) else { return }
-        if !instance.credential.isEmpty {
+        if instance.isPublic {
+            credentials.deleteCredential(for: instance.id.uuidString)
+        } else if !instance.credential.isEmpty {
             credentials.saveCredential(instance.credential, for: instance.id.uuidString)
         }
         cancelRefresh(for: instance.id)
@@ -206,7 +210,7 @@ final class AppState {
 
     func instanceWithCredential(_ instance: Instance) -> Instance {
         var result = instance
-        result.credential = credentials.loadCredential(for: instance.id.uuidString) ?? ""
+        result.credential = instance.isPublic ? "" : (credentials.loadCredential(for: instance.id.uuidString) ?? "")
         return result
     }
 
@@ -240,18 +244,20 @@ struct Instance: Identifiable, Codable, Equatable, Hashable {
     var email: String
     var credential: String
     var fallbackURL: String
+    var isPublic: Bool
 
-    init(id: UUID = UUID(), name: String, url: String, email: String, credential: String, fallbackURL: String = "") {
+    init(id: UUID = UUID(), name: String, url: String, email: String, credential: String, fallbackURL: String = "", isPublic: Bool = false) {
         self.id = id
         self.name = name
         self.url = url
         self.email = email
         self.credential = credential
         self.fallbackURL = fallbackURL
+        self.isPublic = isPublic
     }
 
     enum CodingKeys: String, CodingKey {
-        case id, name, url, email, fallbackURL
+        case id, name, url, email, fallbackURL, isPublic
     }
 
     init(from decoder: Decoder) throws {
@@ -262,6 +268,7 @@ struct Instance: Identifiable, Codable, Equatable, Hashable {
         email = try container.decode(String.self, forKey: .email)
         credential = ""
         fallbackURL = try container.decodeIfPresent(String.self, forKey: .fallbackURL) ?? ""
+        isPublic = try container.decodeIfPresent(Bool.self, forKey: .isPublic) ?? false
     }
 
     func encode(to encoder: Encoder) throws {
@@ -271,6 +278,7 @@ struct Instance: Identifiable, Codable, Equatable, Hashable {
         try container.encode(url, forKey: .url)
         try container.encode(email, forKey: .email)
         if !fallbackURL.isEmpty { try container.encode(fallbackURL, forKey: .fallbackURL) }
+        if isPublic { try container.encode(isPublic, forKey: .isPublic) }
     }
 
     func hash(into hasher: inout Hasher) {
