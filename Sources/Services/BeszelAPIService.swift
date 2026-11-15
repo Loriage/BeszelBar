@@ -130,17 +130,18 @@ actor BeszelAPIService: BeszelServing {
     }
 
     private func performRequest<T: Decodable>(with url: URL, retryCount: Int = 0) async throws -> T {
-        let token = try await getValidToken()
-
         var request = URLRequest(url: url)
-        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        if !instance.isPublic {
+            let token = try await getValidToken()
+            request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
 
         let (data, response) = try await connection.data(for: request)
 
         if let httpResponse = response as? HTTPURLResponse {
             if httpResponse.statusCode == 200 {
                 return try jsonDecoder.decode(T.self, from: data)
-            } else if httpResponse.statusCode == 401 && retryCount < 1 {
+            } else if httpResponse.statusCode == 401 && !instance.isPublic && retryCount < 1 {
                 authToken = nil
                 return try await performRequest(with: url, retryCount: retryCount + 1)
             } else {

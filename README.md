@@ -63,6 +63,8 @@ The primary address is preferred. After a connection failure, the secondary addr
 
 BeszelBar supports both password and JWT token authentication. Tokens are automatically refreshed when needed.
 
+For a hub that permits unauthenticated access, select **Public hub (no authentication)** instead of entering credentials. Requests to that hub are sent without an authorization header. Only use this option for a hub whose access is already controlled as intended. Switching an existing hub to public mode removes its saved password from Keychain.
+
 ## Requirements
 
 - macOS 14.0 (Sonoma) or later

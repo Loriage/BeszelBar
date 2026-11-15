@@ -115,6 +115,24 @@ final class AppStateTests: XCTestCase {
         XCTAssertFalse(state.isLoading)
     }
 
+    func testSwitchingToPublicRemovesStoredCredential() async {
+        let suite = "BeszelBarTests.\(UUID().uuidString)"
+        suites.append(suite)
+        let storage = StorageManager(defaults: UserDefaults(suiteName: suite)!)
+        let credentials = TestCredentials()
+        let instance = Instance(name: "Hub", url: "https://hub.example", email: "user@example.com", credential: "secret")
+        let state = AppState(storage: storage, credentials: credentials, serviceFactory: { _ in TestService(name: "Hub") })
+        state.addInstance(instance)
+        XCTAssertEqual(credentials.loadCredential(for: instance.id.uuidString), "secret")
+        var publicInstance = instance
+        publicInstance.isPublic = true
+        state.updateInstance(publicInstance)
+        await state.waitForRefresh()
+        XCTAssertNil(credentials.loadCredential(for: instance.id.uuidString))
+        XCTAssertEqual(state.instanceWithCredential(publicInstance).credential, "")
+        XCTAssertTrue(storage.loadInstances()[0].isPublic)
+    }
+
     func testRemovingLoadingHubDoesNotResurrectIt() async {
         let a = hub("A")
         let pending = ControlledService()

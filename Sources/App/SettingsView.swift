@@ -229,6 +229,7 @@ struct AddHubSheet: View {
     @State private var fallbackURL = ""
     @State private var email = ""
     @State private var password = ""
+    @State private var isPublic = false
     @State private var isLoading = false
     @State private var saveTask: Task<Void, Never>?
     @State private var errorMessage: String?
@@ -253,13 +254,17 @@ struct AddHubSheet: View {
                     .textContentType(.URL)
                     .help("An alternative address for the same hub, used if the primary URL cannot be reached.")
 
-                TextField("Email", text: $email)
-                    .textFieldStyle(.roundedBorder)
-                    .textContentType(.emailAddress)
+                Toggle("Public hub (no authentication)", isOn: $isPublic)
+                    .help("Saving a public hub removes any saved password for this hub.")
+                if !isPublic {
+                    TextField("Email", text: $email)
+                        .textFieldStyle(.roundedBorder)
+                        .textContentType(.emailAddress)
 
-                SecureField("Password", text: $password)
-                    .textFieldStyle(.roundedBorder)
-                    .textContentType(.password)
+                    SecureField("Password", text: $password)
+                        .textFieldStyle(.roundedBorder)
+                        .textContentType(.password)
+                }
             }
             .formStyle(.grouped)
             .scrollDisabled(true)
@@ -295,12 +300,12 @@ struct AddHubSheet: View {
                     }
                 }
                 .buttonStyle(PillButtonStyle(isPrimary: true))
-                .disabled(name.isEmpty || url.isEmpty || email.isEmpty || password.isEmpty || isLoading)
+                .disabled(name.isEmpty || url.isEmpty || (!isPublic && (email.isEmpty || password.isEmpty)) || isLoading)
                 .keyboardShortcut(.return)
             }
             .padding()
         }
-        .frame(width: 450, height: 420)
+        .frame(width: 450, height: 460)
         .onDisappear { saveTask?.cancel() }
     }
 
@@ -322,8 +327,9 @@ struct AddHubSheet: View {
                     name: name,
                     url: cleanURL,
                     email: email,
-                    credential: password,
-                    fallbackURL: cleanFallbackURL
+                    credential: isPublic ? "" : password,
+                    fallbackURL: cleanFallbackURL,
+                    isPublic: isPublic
                 )
 
                 let service = BeszelAPIService(instance: testInstance)
@@ -331,7 +337,7 @@ struct AddHubSheet: View {
                 try Task.checkCancellation()
 
                 await MainActor.run {
-                    let instance = Instance(name: name, url: cleanURL, email: email, credential: password, fallbackURL: cleanFallbackURL)
+                    let instance = Instance(name: name, url: cleanURL, email: email, credential: isPublic ? "" : password, fallbackURL: cleanFallbackURL, isPublic: isPublic)
                     appState.addInstance(instance)
                     dismiss()
                 }
@@ -357,6 +363,7 @@ struct EditHubSheet: View {
     @State private var fallbackURL: String
     @State private var email: String
     @State private var password: String
+    @State private var isPublic: Bool
     @State private var isLoading = false
     @State private var saveTask: Task<Void, Never>?
     @State private var errorMessage: String?
@@ -369,6 +376,7 @@ struct EditHubSheet: View {
         _fallbackURL = State(initialValue: instance.fallbackURL)
         _email = State(initialValue: instance.email)
         _password = State(initialValue: appState.instanceWithCredential(instance).credential)
+        _isPublic = State(initialValue: instance.isPublic)
     }
 
     var body: some View {
@@ -390,11 +398,15 @@ struct EditHubSheet: View {
                     .textContentType(.URL)
                     .help("An alternative address for the same hub, used if the primary URL cannot be reached.")
 
-                TextField("Email", text: $email)
-                    .textFieldStyle(.roundedBorder)
+                Toggle("Public hub (no authentication)", isOn: $isPublic)
+                    .help("Saving a public hub removes any saved password for this hub.")
+                if !isPublic {
+                    TextField("Email", text: $email)
+                        .textFieldStyle(.roundedBorder)
 
-                SecureField("Password", text: $password)
-                    .textFieldStyle(.roundedBorder)
+                    SecureField("Password", text: $password)
+                        .textFieldStyle(.roundedBorder)
+                }
             }
             .formStyle(.grouped)
             .scrollDisabled(true)
@@ -431,12 +443,12 @@ struct EditHubSheet: View {
                     testAndSave()
                 }
                 .buttonStyle(PillButtonStyle(isPrimary: true))
-                .disabled(name.isEmpty || url.isEmpty || email.isEmpty || isLoading)
+                .disabled(name.isEmpty || url.isEmpty || (!isPublic && (email.isEmpty || password.isEmpty)) || isLoading)
                 .keyboardShortcut(.return)
             }
             .padding()
         }
-        .frame(width: 450, height: 440)
+        .frame(width: 450, height: 480)
         .onDisappear { saveTask?.cancel() }
     }
 
@@ -458,8 +470,9 @@ struct EditHubSheet: View {
                     name: name,
                     url: cleanURL,
                     email: email,
-                    credential: password.isEmpty ? appState.instanceWithCredential(instance).credential : password,
-                    fallbackURL: cleanFallbackURL
+                    credential: isPublic ? "" : password,
+                    fallbackURL: cleanFallbackURL,
+                    isPublic: isPublic
                 )
 
                 let service = BeszelAPIService(instance: testInstance)
@@ -472,9 +485,8 @@ struct EditHubSheet: View {
                     updated.url = cleanURL
                     updated.fallbackURL = cleanFallbackURL
                     updated.email = email
-                    if !password.isEmpty {
-                        updated.credential = password
-                    }
+                    updated.isPublic = isPublic
+                    updated.credential = isPublic ? "" : password
                     appState.updateInstance(updated)
                     dismiss()
                 }

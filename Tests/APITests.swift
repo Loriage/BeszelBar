@@ -1,6 +1,62 @@
 import XCTest
 
 final class APITests: XCTestCase {
+    func testPublicHubFetchesWithoutAuthentication() async throws {
+        let recorder = RequestRecorder()
+        StubURLProtocol.handler = { request in
+            recorder.append(request)
+            return Data(#"{"page":1,"perPage":500,"totalPages":1,"totalItems":1,"items":[{"id":"server","name":"Server"}]}"#.utf8)
+        }
+        defer { StubURLProtocol.handler = nil }
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [StubURLProtocol.self]
+        let session = URLSession(configuration: configuration)
+        defer { session.invalidateAndCancel() }
+        let service = BeszelAPIService(instance: Instance(name: "Public", url: "https://hub.example", email: "", credential: "ignored-credential", isPublic: true), session: session)
+        let systems = try await service.fetchSystems()
+        XCTAssertEqual(systems.map(\.id), ["server"])
+        XCTAssertEqual(recorder.requests.count, 1)
+        XCTAssertNil(recorder.requests[0].value(forHTTPHeaderField: "Authorization"))
+        XCTAssertTrue(recorder.requests[0].url!.path.hasSuffix("systems/records"))
+    }
+
+    func testMissingCredentialDoesNotAutomaticallyUsePublicAccess() async throws {
+        let recorder = RequestRecorder()
+        StubURLProtocol.handler = { request in recorder.append(request); return Data() }
+        defer { StubURLProtocol.handler = nil }
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [StubURLProtocol.self]
+        let session = URLSession(configuration: configuration)
+        defer { session.invalidateAndCancel() }
+        let service = BeszelAPIService(instance: Instance(name: "Private", url: "https://hub.example", email: "", credential: ""), session: session)
+        do {
+            _ = try await service.fetchSystems()
+            XCTFail("Expected an authentication error")
+        } catch let error as URLError {
+            XCTAssertEqual(error.code, .userAuthenticationRequired)
+        }
+        XCTAssertTrue(recorder.requests.isEmpty)
+    }
+
+    func testPublicHubDoesNotRetryUnauthorizedRequests() async throws {
+        let recorder = RequestRecorder()
+        StubURLProtocol.statusCode = 401
+        StubURLProtocol.handler = { request in recorder.append(request); return Data() }
+        defer { StubURLProtocol.handler = nil; StubURLProtocol.statusCode = 200 }
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [StubURLProtocol.self]
+        let session = URLSession(configuration: configuration)
+        defer { session.invalidateAndCancel() }
+        let service = BeszelAPIService(instance: Instance(name: "Public", url: "https://hub.example", email: "", credential: "", isPublic: true), session: session)
+        do {
+            _ = try await service.fetchSystems()
+            XCTFail("Expected an HTTP error")
+        } catch let BeszelAPIError.httpError(statusCode, _) {
+            XCTAssertEqual(statusCode, 401)
+        }
+        XCTAssertEqual(recorder.requests.count, 1)
+    }
+
     func testPaginationSubpathHistoryAndAuthenticationReuse() async throws {
         let recorder = RequestRecorder()
         StubURLProtocol.handler = { request in
@@ -46,12 +102,13 @@ private final class RequestRecorder: @unchecked Sendable {
 
 private final class StubURLProtocol: URLProtocol {
     static var handler: ((URLRequest) throws -> Data)?
+    static var statusCode = 200
     override class func canInit(with request: URLRequest) -> Bool { true }
     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
     override func startLoading() {
         do {
             let data = try Self.handler!(request)
-            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: ["Content-Type":"application/json"])!
+            let response = HTTPURLResponse(url: request.url!, statusCode: Self.statusCode, httpVersion: nil, headerFields: ["Content-Type":"application/json"])!
             client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
             client?.urlProtocol(self, didLoad: data)
             client?.urlProtocolDidFinishLoading(self)
