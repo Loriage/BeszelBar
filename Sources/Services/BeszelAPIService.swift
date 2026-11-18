@@ -2,6 +2,7 @@ import Foundation
 
 protocol BeszelServing: Sendable {
     func fetchSystems() async throws -> [SystemRecord]
+    func fetchSystem(id: String) async throws -> SystemRecord?
     func fetchSystemDetails() async throws -> [SystemDetailsRecord]
     func fetchContainers(filter: String?) async throws -> [ContainerRecord]
     func fetchAlerts(filter: String?) async throws -> [AlertRecord]
@@ -13,6 +14,7 @@ protocol BeszelServing: Sendable {
 }
 
 extension BeszelServing {
+    func fetchSystem(id: String) async throws -> SystemRecord? { try await fetchSystems().first { $0.id == id } }
     func fetchDetailedHistory(systemID: String, range: HistoryRange, now: Date) async throws -> [DetailedSystemRecord] { [] }
     func fetchContainerHistory(systemID: String, range: HistoryRange, now: Date) async throws -> [DetailedContainerRecord] { [] }
     func fetchZFSPools(systemID: String) async throws -> [ZFSPoolRecord] { [] }
@@ -153,6 +155,23 @@ actor BeszelAPIService: BeszelServing {
 
     func fetchSystems() async throws -> [SystemRecord] {
         try await fetchAllPages(path: "/api/collections/systems/records", filter: nil)
+    }
+
+    /// Returns nil when the system no longer exists on the hub.
+    func fetchSystem(id: String) async throws -> SystemRecord? {
+        guard let url = URL(string: "\(instance.url)/api/collections/systems/records/\(id)") else {
+            throw URLError(.badURL)
+        }
+
+        do {
+            let system: SystemRecord = try await performRequest(with: url)
+            return system
+        } catch let error as BeszelAPIError {
+            if case .httpError(let statusCode, _) = error, statusCode == 404 {
+                return nil
+            }
+            throw error
+        }
     }
 
     func fetchSystemDetails() async throws -> [SystemDetailsRecord] {

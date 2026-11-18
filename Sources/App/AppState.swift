@@ -16,6 +16,8 @@ final class AppState {
     private(set) var showsAllHubs: Bool
     private(set) var hubSnapshots: [UUID: HubSnapshot] = [:]
     private(set) var connectionRevision = 0
+    /// The menu bar pinned system, fetched separately when its hub isn't visible (and so isn't refreshed).
+    private(set) var pinnedSystem: HubSystem?
 
     private let storage: StorageManager
     private let credentials: any CredentialStore
@@ -23,6 +25,7 @@ final class AppState {
     @ObservationIgnored private var apiServices: [UUID: any BeszelServing] = [:]
     @ObservationIgnored private var refreshTasks: [UUID: Task<Void, Never>] = [:]
     @ObservationIgnored private var generations: [UUID: UUID] = [:]
+    @ObservationIgnored private var pinnedTask: Task<Void, Never>?
 
     init(storage: StorageManager = StorageManager(),
          credentials: any CredentialStore = KeychainService.shared,
@@ -74,6 +77,7 @@ final class AppState {
 
     func refresh() {
         for instance in visibleInstances { refresh(instance) }
+        loadPinnedSystem()
     }
 
     func refresh(_ instance: Instance) {
@@ -142,6 +146,8 @@ final class AppState {
 
     func stopRefreshing() {
         for id in Array(refreshTasks.keys) { cancelRefresh(for: id) }
+        pinnedTask?.cancel()
+        pinnedTask = nil
     }
 
     private func accepts(_ id: UUID, generation: UUID) -> Bool {
@@ -152,6 +158,55 @@ final class AppState {
         generations[id] = nil
         refreshTasks.removeValue(forKey: id)?.cancel()
         hubSnapshots[id]?.isLoading = false
+    }
+
+    /// The system whose stats are shown next to the menu bar icon, if one is pinned.
+    var menuBarSystem: SystemRecord? {
+        guard let settings = MenuBarStatsSettings.current() else { return nil }
+        let id = HubRecordID(hubID: settings.hubID, recordID: settings.systemID)
+        if visibleInstances.contains(where: { $0.id == settings.hubID }) {
+            return system(for: id)?.system
+        }
+        return pinnedSystem?.id == id ? pinnedSystem?.system : nil
+    }
+
+    /// Fetches the pinned system when its hub isn't visible.
+    /// Systems of visible hubs are already loaded by `refresh()`.
+    func loadPinnedSystem() {
+        pinnedTask?.cancel()
+        pinnedTask = nil
+
+        guard let settings = MenuBarStatsSettings.current(),
+              !visibleInstances.contains(where: { $0.id == settings.hubID }),
+              let hub = instances.first(where: { $0.id == settings.hubID }) else {
+            pinnedSystem = nil
+            return
+        }
+
+        let service = getOrCreateService(for: hub)
+        pinnedTask = Task { [weak self] in
+            do {
+                let system = try await service.fetchSystem(id: settings.systemID)
+                guard let self, !Task.isCancelled else { return }
+                self.pinnedSystem = system.map { HubSystem(instance: hub, system: $0) }
+            } catch {
+                // Keep the last known value; the next refresh retries.
+            }
+        }
+    }
+
+    /// Fetches the systems of every hub, for choosing which one to pin in Settings.
+    /// Hubs that can't be reached are returned with no systems.
+    func fetchSystemsForAllHubs() async -> [(hub: Instance, systems: [SystemRecord])] {
+        var result: [(hub: Instance, systems: [SystemRecord])] = []
+        for hub in instances {
+            let service = getOrCreateService(for: hub)
+            let systems = (try? await service.fetchSystems()) ?? []
+            result.append((hub: hub, systems: systems.sorted {
+                $0.name.localizedStandardCompare($1.name) == .orderedAscending
+            }))
+        }
+        return result
     }
 
     func selectInstance(_ instance: Instance?) {

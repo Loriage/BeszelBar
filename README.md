@@ -49,6 +49,7 @@ To choose a specific certificate when several are installed, set `BESZELBAR_SIGN
 - **Fallback URL** — Configure a primary and optional secondary address for the same hub; BeszelBar switches automatically when an address is unreachable
 - **Native performance** — Built with SwiftUI and AppKit for minimal resource usage
 - **Secure authentication** — Credentials stored safely in macOS Keychain
+- **Menu bar stats** — Pin one system and show its CPU, memory, disk, or temperature next to the menu bar icon
 - **Auto-refresh** — Configurable polling interval from 10 seconds to 5 minutes
 
 ## Setup
