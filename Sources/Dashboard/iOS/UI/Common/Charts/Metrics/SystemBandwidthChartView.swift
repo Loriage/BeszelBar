@@ -1,0 +1,127 @@
+import SwiftUI
+import Charts
+
+struct SystemBandwidthChartView: View {
+    @Environment(\.chartXDomain) private var chartXDomain
+    @Environment(\.chartShowXGridLines) private var chartShowXGridLines
+    let dataPoints: [SystemDataPoint]
+    let xAxisFormat: Date.FormatStyle
+
+    var systemName: String? = nil
+
+    var isPinned: Bool = false
+    var onPinToggle: () -> Void = {}
+
+    var body: some View {
+        GroupBox(label: HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                (Text("chart.bandwidth") + Text(" (MB/s)"))
+                    .font(IOSFont.headline)
+                if systemName == nil {
+                    Text("chart.bandwidth.subtitle")
+                        .font(IOSFont.caption2)
+                        .foregroundColor(.secondary)
+                }
+                if let systemName = systemName {
+                    Text(systemName)
+                        .font(IOSFont.caption2)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+            }
+            Spacer()
+            PinButtonView(isPinned: isPinned, action: onPinToggle)
+        }) {
+            VStack(spacing: 4) {
+            Chart(dataPoints) { point in
+                if let bandwidth = point.bandwidth {
+                    Plot {
+                        LineMark(
+                            x: .value("Date", point.date),
+                            y: .value("Download", bandwidth.download),
+                            series: .value("Period", "Download")
+                        )
+                        .foregroundStyle(.green)
+
+                        AreaMark(
+                            x: .value("Date", point.date),
+                            yStart: .value("Period", 0),
+                            yEnd: .value("Download", bandwidth.download),
+                            series: .value("Period", "Download")
+                        )
+                        .foregroundStyle(LinearGradient(colors: [.green.opacity(0.2), .clear], startPoint: .top, endPoint: .bottom))
+                    }
+
+                    Plot {
+                        LineMark(
+                            x: .value("Date", point.date),
+                            y: .value("Upload", bandwidth.upload),
+                            series: .value("Period", "Upload")
+                        )
+                        .foregroundStyle(.red)
+
+                        AreaMark(
+                            x: .value("Date", point.date),
+                            yStart: .value("Period", 0),
+                            yEnd: .value("Upload", bandwidth.upload),
+                            series: .value("Period", "Upload")
+                        )
+                        .foregroundStyle(LinearGradient(colors: [.red.opacity(0.2), .clear], startPoint: .top, endPoint: .bottom))
+                    }
+                }
+            }
+            .chartXAxis {
+                AxisMarks(values: insetTickDates(for: chartXDomain)) { _ in
+                    if chartShowXGridLines {
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: [2, 3]))
+                        AxisTick()
+                    }
+                    AxisValueLabel(format: xAxisFormat, anchor: .top, collisionResolution: .disabled)
+                        .font(IOSFont.caption2)
+                }
+            }
+            .chartYAxis {
+                AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) { value in
+                    AxisGridLine()
+                    AxisValueLabel {
+                        if let bytes = value.as(Double.self) {
+                            let v = bytes / 1_048_576.0
+                            let s = bytes == 0 ? "0"
+                                : v.truncatingRemainder(dividingBy: 1) == 0
+                                    ? String(format: "%.0f", v)
+                                    : String(format: "%.1f", v)
+                            Text(s).font(IOSFont.caption2).padding(.trailing, 6)
+                        }
+                    }
+                }
+            }
+            .chartLegend(.hidden)
+            .chartXScaleIfNeeded(chartXDomain)
+            .padding(.top, 5)
+            .frame(height: 185)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(Text("chart.bandwidth"))
+            .accessibilityValue(accessibilityDescription)
+
+            HStack(spacing: 12) {
+                HStack(spacing: 4) {
+                    Circle().fill(.green).frame(width: 8, height: 8)
+                    Text("chart.bandwidth.download").font(IOSFont.caption2).foregroundStyle(.secondary)
+                }
+                HStack(spacing: 4) {
+                    Circle().fill(.red).frame(width: 8, height: 8)
+                    Text("chart.bandwidth.upload").font(IOSFont.caption2).foregroundStyle(.secondary)
+                }
+            }
+            }
+            .frame(height: 200)
+        }
+    }
+
+    private var accessibilityDescription: String {
+        guard let latest = dataPoints.last?.bandwidth else { return "" }
+        let download = latest.download / 1024_000.0
+        let upload = latest.upload / 1024_000.0
+        return String(format: "Download: %.1f MB/s, Upload: %.1f MB/s", download, upload)
+    }
+}

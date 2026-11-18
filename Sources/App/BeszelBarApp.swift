@@ -9,17 +9,15 @@ struct BeszelBarApp: App {
             SettingsView(appState: AppState.shared)
         }
         .commands {
-            CommandGroup(after: .appSettings) {
+            CommandGroup(replacing: .appSettings) {
+                Button("Open Dashboard…") {
+                    WindowManager.shared.showDashboard()
+                }
+                .keyboardShortcut("d")
                 Button("Settings...") {
                     WindowManager.shared.showSettings()
                 }
                 .keyboardShortcut(",")
-            }
-            CommandGroup(after: .appTermination) {
-                Button("Quit BeszelBar") {
-                    NSApp.terminate(nil)
-                }
-                .keyboardShortcut("q")
             }
         }
     }

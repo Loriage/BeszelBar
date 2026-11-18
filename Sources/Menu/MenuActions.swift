@@ -14,7 +14,7 @@ final class MenuActions: NSObject {
 
     @objc func refreshNow(_ sender: Any?) {
         Task { @MainActor in
-            AppState.shared.loadSystems()
+            AppState.shared.refresh()
         }
     }
 
@@ -26,25 +26,20 @@ final class MenuActions: NSObject {
         }
     }
 
-    @objc func openSystemInBrowser(_ sender: NSMenuItem) {
-        Task { @MainActor in
-            guard let systemID = sender.representedObject as? String,
-                  let instance = AppState.shared.selectedInstance else { return }
-
-            let urlString = "\(instance.url)/#/systems/\(systemID)"
-            if let url = URL(string: urlString) {
-                NSWorkspace.shared.open(url)
-            }
-        }
+    @objc func showAllHubs(_ sender: Any?) {
+        Task { @MainActor in AppState.shared.selectInstance(nil) }
     }
 
-    @objc func systemClicked(_ sender: NSMenuItem) {
+    @objc func openDashboard(_ sender: Any?) {
+        let id = (sender as? NSMenuItem)?.representedObject as? HubRecordID
+        Task { @MainActor in WindowManager.shared.showDashboard(systemID: id) }
+    }
+
+    @objc func openSystemInBrowser(_ sender: NSMenuItem) {
         Task { @MainActor in
-            guard let systemID = sender.representedObject as? String else { return }
-            if let url = AppState.shared.selectedInstance?.url {
-                NSPasteboard.general.clearContents()
-                NSPasteboard.general.setString(url, forType: .string)
-            }
+            guard let id = sender.representedObject as? HubRecordID,
+                  let url = AppState.shared.system(for: id)?.browserURL else { return }
+            NSWorkspace.shared.open(url)
         }
     }
 

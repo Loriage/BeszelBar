@@ -3,12 +3,16 @@ import AppKit
 import Combine
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var statusItem: NSStatusItem?
-    private var observationTask: Task<Void, Never>?
     private var cancellables = Set<AnyCancellable>()
+    private var isObserving = false
+    private var menuIsOpen = false
 
     func applicationDidFinishLaunching(_: Notification) {
+        #if DEBUG
+        if DevelopmentSession.isTestHost { return }
+        #endif
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = item.button {
             button.image = NSImage(systemSymbolName: "server.rack", accessibilityDescription: "BeszelBar")
@@ -16,40 +20,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         item.menu = MenuBuilder.build(appState: AppState.shared)
+        item.menu?.delegate = self
         self.statusItem = item
 
-        AppState.shared.loadSystems()
         RefreshService.shared.start()
         startObserving()
 
         NSApp.setActivationPolicy(.accessory)
+        #if DEBUG
+        if DevelopmentSession.isEnabled { WindowManager.shared.showDashboard() }
+        #endif
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        #if DEBUG
+        if DevelopmentSession.isTestHost { return }
+        #endif
         RefreshService.shared.stop()
-        observationTask?.cancel()
+        isObserving = false
+        AppState.shared.stopRefreshing()
     }
 
     private func startObserving() {
-        observationTask = Task { @MainActor in
-            while !Task.isCancelled {
-                await withCheckedContinuation { continuation in
-                    withObservationTracking {
-                        _ = AppState.shared.instances
-                        _ = AppState.shared.selectedInstance
-                        _ = AppState.shared.selectedInstanceSystems
-                        _ = AppState.shared.isLoading
-                        _ = AppState.shared.activeAlerts
-                        _ = AppState.shared.systemDetails
-                        _ = AppState.shared.containers
-                        _ = AppState.shared.pinnedSystem
-                    } onChange: {
-                        continuation.resume()
-                    }
-                }
-                refreshMenu()
-            }
-        }
+        isObserving = true
+        observeState()
 
         // Menu bar stats settings live in UserDefaults, which Observation doesn't track.
         NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
@@ -61,9 +55,41 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             .store(in: &cancellables)
     }
 
+    private func observeState() {
+        guard isObserving else { return }
+        withObservationTracking {
+            _ = AppState.shared.instances
+            _ = AppState.shared.selectedInstance
+            _ = AppState.shared.showsAllHubs
+            _ = AppState.shared.hubSnapshots
+            _ = AppState.shared.pinnedSystem
+        } onChange: { [weak self] in
+            Task { @MainActor in
+                guard let self, self.isObserving else { return }
+                self.refreshMenu()
+                self.observeState()
+            }
+        }
+    }
+
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        WindowManager.shared.showDashboard()
+        return true
+    }
+
     private func refreshMenu() {
         updateStatusButton()
+        // Keep the tracked menu stable while users navigate its submenus; the status button can still update.
+        guard !menuIsOpen else { return }
         statusItem?.menu = MenuBuilder.build(appState: AppState.shared)
+        statusItem?.menu?.delegate = self
+    }
+
+    func menuWillOpen(_ menu: NSMenu) { menuIsOpen = true }
+
+    func menuDidClose(_ menu: NSMenu) {
+        menuIsOpen = false
+        refreshMenu()
     }
 
     private func updateStatusButton() {

@@ -85,9 +85,10 @@ struct SystemStatsDetail: Codable {
     let dp: Double?
     let ns: Double?
     let nr: Double?
+    var b: [Double]? = nil
 
     enum CodingKeys: String, CodingKey {
-        case cpu, mp, dp, ns, nr
+        case cpu, mp, dp, ns, nr, b
     }
 }
 
@@ -178,13 +179,14 @@ struct AlertRecord: Identifiable, Codable {
     let triggered: Bool?
     let created: String?
     let updated: String?
+    var value: Double? = nil
 
     var displayMetric: String {
-        metric ?? "unknown"
+        metric ?? name
     }
 
     var displayThreshold: String {
-        if let t = threshold {
+        if let t = threshold ?? value {
             return String(format: "%.0f", t)
         }
         return "-"

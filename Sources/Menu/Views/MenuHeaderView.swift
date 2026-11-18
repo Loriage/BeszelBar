@@ -9,19 +9,17 @@ struct MenuHeaderView: View {
                 VStack(alignment: .leading, spacing: 1) {
                     Text("BeszelBar")
                         .font(.system(size: 13, weight: .semibold))
-                    if let selected = appState.selectedInstance {
-                        Text(selected.name.isEmpty ? selected.url : selected.name)
-                            .font(.system(size: 10))
-                            .foregroundColor(.secondary)
-                            .lineLimit(1)
-                    }
+                    Text(appState.scopeTitle)
+                        .font(.system(size: 10))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 }
 
                 Spacer()
 
-                if !appState.selectedInstanceSystems.isEmpty {
-                    let online = appState.selectedInstanceSystems.filter { $0.isOnline }.count
-                    let offline = appState.selectedInstanceSystems.count - online
+                if !appState.visibleSystems.isEmpty {
+                    let online = appState.visibleSystems.filter { $0.system.isOnline }.count
+                    let offline = appState.visibleSystems.count - online
 
                     HStack(spacing: 6) {
                         StatusBubble(count: online, color: .green, icon: "checkmark.circle.fill")
